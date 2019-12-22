@@ -15,7 +15,7 @@
           </b-nav-item-dropdown>
           <b-nav-item-dropdown text="Project" left>
             <b-dropdown-item @click="$bvModal.show('modal-scoped')">create</b-dropdown-item>
-            <b-dropdown-item href="#">my project</b-dropdown-item>
+            <b-dropdown-item @click="goMyProject">my project</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
 
@@ -34,7 +34,7 @@
               <font-awesome-icon icon="user" size="lg" />
             </template>
             <b-dropdown-item href="#">Profile</b-dropdown-item>
-            <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+            <b-dropdown-item @click="logout">Sign Out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -45,15 +45,18 @@
 <script>
 export default {
   name: "NavBar",
-  Data(){
-    return {
-
-    }
+  Data() {
+    return {};
   },
-  methods:{
-    createProject(){
-
+  methods: {
+    createProject() {},
+    goMyProject() {
+      this.$router.push("/project");
     },
+    logout() {
+      localStorage.removeItem("token");
+      this.$router.push("/login");
+    }
   }
 };
 </script>
