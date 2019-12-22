@@ -15,6 +15,9 @@
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.1.0",
     "core-js": "^2.6.11",
+    "jquery": "^3.4.1",
+    "lodash": "^4.17.15",
+    "popper.js": "^1.16.0",
     "vue": "^2.6.11",
     "vue-router": "^3.0.3"
   },
@@ -23,22 +26,46 @@
     "@vue/cli-plugin-eslint": "^3.0.3",
     "@vue/cli-service": "^4.1.1",
     "babel-eslint": "^10.0.1",
+    "vue-template-compiler": "^2.6.11",
     "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.6.11"
+    "eslint-plugin-vue": "^5.0.0"
   },
   "eslintConfig": {
-    "root": true,
+    "root": false,
     "env": {
-      "node": true
+      "node": false
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/recommended",
       "eslint:recommended"
     ],
-    "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
+    },
+    "rules": {
+      "vue/no-dupe-keys": "warning",
+      "vue/html-end-tags": "warning",
+      "vue/html-indent": "warning",
+      "vue/html-quotes": "warning",
+      "vue/html-self-closing": "warning",
+      "vue/max-attributes-per-line": "warning",
+      "vue/multiline-html-element-content-newline": "warning",
+      "vue/mustache-interpolation-spacing": "warning",
+      "vue/name-property-casing": "warning",
+      "vue/no-multi-spaces": "warning",
+      "vue/no-spaces-around-equal-signs-in-attribute": "warning",
+      "vue/no-template-shadow": "warning",
+      "vue/prop-name-casing": "warning",
+      "vue/require-default-prop": "warning",
+      "vue/require-prop-types": "warning",
+      "vue/singleline-html-element-content-newline": "warning",
+      "vue/v-bind-style": "warning",
+      "vue/v-on-style": "warning",
+      "vue/attributes-order": "warning",
+      "vue/no-confusing-v-for-v-if": "warning",
+      "vue/no-v-html": "warning",
+      "vue/order-in-components": "warning",
+      "vue/this-in-template": "warning"
     }
   },
   "postcss": {
