@@ -30,7 +30,7 @@
           </form>
         </template>
 
-        <template v-slot:modal-footer="{ }">
+        <template v-slot:modal-footer="{ cancel }">
           <!-- Emulate built in modal footer ok and cancel button actions -->
           <b-button size="sm" @click="cancel()">Cancel</b-button>
           <b-button size="sm" variant="primary" @click="handleOk">Create</b-button>
