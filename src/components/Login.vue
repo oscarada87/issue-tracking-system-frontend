@@ -69,6 +69,7 @@ export default {
         if (res.status >= 200 && res.status < 300) {
           localStorage.setItem("token", res.data);
           this.isPasswordOrUserIDError = false;
+          this.$router.push("/");
         } else {
           this.isPasswordOrUserIDError = true;
           this.invalidPasswordFeedback = "wrong account or password";
