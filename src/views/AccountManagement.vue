@@ -306,7 +306,7 @@ export default {
       currentPage: 1,
       perPage: 10,
       pageOptions: [10, 15, 20],
-      sortBy: "",
+      sortBy: "account",
       sortDesc: false,
       sortDirection: "asc",
       filter: null,
