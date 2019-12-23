@@ -21,12 +21,6 @@
     </b-container>
   </div>
 </template>
-        </b-col>
-
-      </b-row>
-    </b-container>
-  </div>
-</template>
 
 <script>
 // @ is an alias to /src
