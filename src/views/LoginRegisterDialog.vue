@@ -1,7 +1,7 @@
 <template>
   <div>
     <NavBar />
-    <b-modal id="modal-scoped" centered hide-footer no-close-on-backdrop :title="titleName[tabIndex]">
+    <b-modal id="modal-scoped" centered hide-footer no-close-on-backdrop no-close-on-esc :title="titleName[tabIndex]">
       <b-tabs content-class="mt-3" v-model="tabIndex" lazy>
         <b-tab title="Login">
           <Login/>
