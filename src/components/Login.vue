@@ -41,10 +41,6 @@ import { async } from "q";
 const axios = require("axios").default;
 
 export default {
-  mounted() {
-    this.$bvModal.show("modal-login-scoped");
-  },
-  props: ["titleName"],
   data() {
     return {
       userID: "",
@@ -56,7 +52,6 @@ export default {
   methods: {
     async login() {
       // write login authencation logic here!
-      if (!this.isPasswordOrUserIDError) {
         let res = await axios
           .post(
             "http://lspssapple.asuscomm.com:81/api/user/token",
@@ -71,14 +66,14 @@ export default {
             return err;
           });
         if (res.status >= 200 && res.status < 300) {
-          localStorage.setItem("token", res.data);
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("userId", res.data.userId);
           this.isPasswordOrUserIDError = false;
           this.$router.push("/");
         } else {
           this.isPasswordOrUserIDError = true;
           this.$refs.AlertModal.show();
         }
-      }
     }
   },
   computed: {
