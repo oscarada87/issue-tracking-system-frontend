@@ -30,10 +30,14 @@
         ></b-form-input>
       </b-form-group>
       <b-button type="submit" :disabled="!btnLoginEnabled">Login In</b-button>
+      <b-modal id="Alertmodal" ref="AlertModal" ok-only centered>
+        <b-alert class="left" show variant="danger">"wrong account or password"</b-alert>
+      </b-modal>
     </b-form>
   </div>
 </template>
 <script>
+import { async } from "q";
 const axios = require("axios").default;
 
 export default {
@@ -52,7 +56,6 @@ export default {
   methods: {
     async login() {
       // write login authencation logic here!
-
       if (!this.isPasswordOrUserIDError) {
         let res = await axios
           .post(
@@ -63,8 +66,9 @@ export default {
           .then(async function(res) {
             return res;
           })
-          .catch(function(err) {
+          .catch(async function(err) {
             console.log(err.response);
+            return err;
           });
         if (res.status >= 200 && res.status < 300) {
           localStorage.setItem("token", res.data);
@@ -72,10 +76,10 @@ export default {
           this.$router.push("/");
         } else {
           this.isPasswordOrUserIDError = true;
-          this.invalidPasswordFeedback = "wrong account or password";
+          this.$refs.AlertModal.show();
         }
       }
-    },
+    }
   },
   computed: {
     btnLoginEnabled() {
@@ -107,7 +111,7 @@ export default {
         return "";
       } else if (this.password.length > 0) {
         this.isPasswordOrUserIDError = true;
-        return "Enter at least 8 characters";
+        return "Enter at least 4 characters";
       } else {
         this.isPasswordOrUserIDError = true;
         return "Please enter something";
