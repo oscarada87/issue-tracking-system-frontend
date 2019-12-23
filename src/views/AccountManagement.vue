@@ -135,9 +135,9 @@
             >新增使用者</b-button>
           </b-col>
           <b-col lg="6" class="my-1"></b-col>
-          <b-col lg="3" class="my-2">
-            <b-collapse id="create-new-user-collapse" class="mt-2 float-center">
-              <b-card>
+          <b-col lg="6" class="my-2">
+            <b-collapse id="create-new-user-collapse" class="mt-2">
+              <b-card class="float-right">
                 <Register @registerSuccess="createUser" />
               </b-card>
             </b-collapse>
@@ -218,8 +218,9 @@
               label-for="lineId"
               description="修改 lineId"
             >
-              <b-form-input id="lineId" v-model="newData.lineId" required />
+              <b-form-input id="lineId" v-model="newData.lineId" />
             </b-form-group>
+            <b-button type="submit" pill variant="success" class="float-right">送出</b-button>
           </b-form>
         </b-modal>
         <!-- Info modal END-->
@@ -250,7 +251,8 @@ export default {
         password: "",
         eMail: "",
         charactorId: "",
-        lineId: ""
+        lineId: "",
+        userId: ""
       },
       CharactorSelect: 1,
       items: [],
@@ -342,6 +344,9 @@ export default {
       this.newData.charactorId = item.charactorId ? item.charactorId : 0;
       this.newData.eMail = item.eMail;
       this.newData.lineId = item.lineId;
+      this.newData.account = item.account;
+      this.newData.password = item.password;
+      this.newData.userId = item.id;
       this.infoModal.content = JSON.stringify(item, null, 2);
       // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
       this.$bvModal.show(this.infoModal.id);
@@ -355,7 +360,8 @@ export default {
         password: "",
         eMail: "",
         charactorId: "",
-        lineId: ""
+        lineId: "",
+        userId: ""
       };
     },
     onFiltered(filteredItems) {
@@ -421,7 +427,43 @@ export default {
       // item.charactorId = 2;
       // item.lineId = "";
     },
-    async handleSubmit() {},
+    async handleSubmit() {
+      const data = {
+        name: this.newData.name,
+        eMail: this.newData.eMail,
+        charactorId: this.newData.charactorId,
+        lineId: this.newData.lineId,
+        password: this.newData.password
+      };
+      const token = localStorage.getItem("token");
+      let res = await axios
+        .post(
+          `http://lspssapple.asuscomm.com:81/api/user/${this.newData.userId}`,
+          data,
+          {
+            headers: {
+              "content-type": "application/json;charset=utf-8",
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+        .then(async res => {
+          return await res;
+        })
+        .catch(async err => {
+          console.log(err);
+          return await err.response;
+        });
+      // console.log(this.newData)
+      if (res.status == 200) {
+        this.fetchData();
+        this.$bvModal.hide(this.infoModal.id);
+      } else {
+        localStorage.removeItem("token", res.data.token);
+        localStorage.removeItem("userId", res.data.userId);
+        this.$router.push("/");
+      }
+    },
     createUser() {
       this.fetchData();
       this.$root.$emit("bv::toggle::collapse", "create-new-user-collapse");
