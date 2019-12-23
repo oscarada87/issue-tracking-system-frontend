@@ -7,7 +7,7 @@
                     <input class="form-control searchbar" type="text" placeholder="請輸入關鍵字" v-model="searchText">
                 </div>
                 <div class="col col-auto ml-0">
-                    <button class="btn btn-primary" @click.prevent="clearTempIssue(); openDeleteModal()">新增問題</button>
+                    <button class="btn btn-primary" @click.prevent="clearTempIssue(); openAddModal()">新增問題</button>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
                 <tr v-for="(item, id) in handleIssues" :key="id">
                     <td class="align-middle">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            @click.prevent="tempIssue = item; openEditModal()">
+                            @click.prevent="checkIssue()">
                             <font-awesome-icon icon="edit" />
                         </button>
                     </td>
@@ -38,13 +38,13 @@
                         {{ item.IssueSummary }}
                     </td>
                     <td class="align-middle">
-                        {{ item.Assignee }}
+                        {{ item.AssigneeId }}
                     </td>
                     <td class="align-middle">
-                        {{ item.Reporter }}
+                        {{ item.ReporterId }}
                     </td>
                     <td class="align-middle">
-                        {{ item.Status }}
+                        {{ item.StatusId }}
                     </td>
                     <td class="align-middle">
                         {{ item.CreateTime }}
@@ -66,23 +66,27 @@
         <b-modal id="addIssueModal" title="新增問題" @show="clearTempIssue" @ok="createIssue">
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-8">
+                    <div class="col-sm">
                         <div class="form-group">
                             <label for="title">問題名稱</label>
                             <input type="text" class="form-control" id="title" placeholder="" required
                                 v-model="tempIssue.IssueSummary">
                         </div>
-
+                        <div class="form-group">
+                            <label for="title">所屬專案</label>
+                            <input type="text" class="form-control" id="title" placeholder="" required
+                                v-model="tempIssue.ProjectId">
+                        </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="origin_price">指派人</label>
                                 <input type="text" class="form-control" id="origin_price" placeholder=""
-                                    v-model="tempIssue.Assignee">
+                                    v-model="tempIssue.AssigneeId">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="price">回報人</label>
                                 <input type="text" class="form-control" id="price" placeholder=""
-                                    v-model="tempIssue.Repoter">
+                                    v-model="tempIssue.RepoterId">
                             </div>
                         </div>
                         <div class="form-group">
@@ -117,23 +121,38 @@
                 tempIssue: {
                     IssueNumber: '',
                     IssueSummary: '',
-                    Assignee: '',
-                    Reporter: '',
-                    Status: '',
+                    AssigneeId: '',
+                    ReporterId: '',
+                    StatusId: '',
                     CreateUser: '',
-                    Description: ''
+                    Description: '',
+                    ProjectId: ''
                 }
             };
         },
         computed: {
             handleIssues() {
                 const vm = this;
-                return _.filter(vm.beverages, function (beverage) {
-                    return beverage.Beverage_Name.match(vm.searchText);
+                return _.filter(vm.issues, function (issue) {
+                    return issue.IssueSummary.match(vm.searchText);
                 });
             },
         },
         methods: {
+            getIssueList() {
+                const api = 'http://lspssapple.asuscomm.com:81/api/issue';
+                const vm = this;
+                this.$http.get(
+                    api,
+                    { headers: { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaHJpcyIsImp0aSI6IjI2YjA1NzdmLTg3M2UtNDk3Yi1hZmEyLTYyNmRmMTE0MzYwZiIsIm5iZiI6MTU3NzA5NjQ1OSwiZXhwIjoxNTc3MDk4MjU5LCJpYXQiOjE1NzcwOTY0NTksImlzcyI6Iklzc3VlVHJhY2tpbmdTeXN0ZW0ifQ.B_MH770Tkq6gapFYJJ0Lx46JjkYDuaY6oNJ3BC3rBVY", "content-type": "application/json;charset=utf-8"}}
+                ).
+                then((response) => {
+                    console.log(response)
+                    if(response.data.success){
+                        vm.issues = response.data.data;
+                    }
+                }); 
+            },
             openAddModal() {
                 this.$bvModal.show('addIssueModal');
             },
@@ -165,8 +184,26 @@
                 this.tempIssue = emptyIssue;
             },
             createIssue(){
-                //create issue
+                const api = 'http://lspssapple.asuscomm.com:81/api/issue';
+                const vm = this;
+                this.$http.post(
+                    api,
+                    vm.tempIssue,
+                    { headers: { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaHJpcyIsImp0aSI6IjI2YjA1NzdmLTg3M2UtNDk3Yi1hZmEyLTYyNmRmMTE0MzYwZiIsIm5iZiI6MTU3NzA5NjQ1OSwiZXhwIjoxNTc3MDk4MjU5LCJpYXQiOjE1NzcwOTY0NTksImlzcyI6Iklzc3VlVHJhY2tpbmdTeXN0ZW0ifQ.B_MH770Tkq6gapFYJJ0Lx46JjkYDuaY6oNJ3BC3rBVY", "content-type": "application/json;charset=utf-8"}}
+                ).
+                then((response) => {
+                    console.log(response)
+                    if(response.data.success){
+                       alert('新增問題成功!');
+                    }
+                }); 
+            },
+            checkIssue(){
+                //go to certain issue page
             }
+        },
+        created(){
+            this.getIssueList();
         }
     }
 </script>
