@@ -4,7 +4,6 @@ import Home from './views/Home.vue'
 import Project from './views/Project.vue'
 import Login from './components/Login.vue'
 import Register from './components/Register.vue'
-import UserInfo from './components/UserInfo.vue'
 import LoginRegisterDialog from './views/LoginRegisterDialog.vue'
 import IssueIndex from './views/IssueIndex.vue'
 import IssuePage from './views/IssuePage.vue'
@@ -39,12 +38,8 @@ export default new Router({
       path: '/register',
       name: 'Register',
       component: Register
-    },
+    }, 
     {
-      path: '/userInfo',
-      name: 'userInfo',
-      component: UserInfo
-    },    {
       path: '/LoginRegisterDialog',
       name: 'LoginRegisterDialog',
       component: LoginRegisterDialog
@@ -55,7 +50,7 @@ export default new Router({
       component: IssueIndex
     },
     {
-      path: '/issue/123',
+      path: '/issue/:id',
       name: 'IssuePage',
       component: IssuePage
     }
