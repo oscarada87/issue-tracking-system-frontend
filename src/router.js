@@ -7,6 +7,7 @@ import Register from './components/Register.vue'
 import UserInfo from './components/UserInfo.vue'
 import LoginRegisterDialog from './views/LoginRegisterDialog.vue'
 import IssueIndex from './views/IssueIndex.vue'
+import IssuePage from './views/IssuePage.vue'
 
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
       path: '/issue',
       name: 'IssueIndex',
       component: IssueIndex
+    },
+    {
+      path: '/issue/123',
+      name: 'IssuePage',
+      component: IssuePage
     }
   ]
 })
