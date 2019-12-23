@@ -16,6 +16,18 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.config.productionTip = false
 
+router.beforeEach((to, from, next) => {
+  const isLogin = localStorage.getItem('token') != null;
+  if (isLogin) {
+    next();
+  } else {
+    if (to.path !== '/LoginRegisterDialog')
+      next('/LoginRegisterDialog');
+    else
+      next();
+  }
+});
+
 new Vue({
   router,
   render: h => h(App)

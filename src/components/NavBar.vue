@@ -1,16 +1,21 @@
 <template>
   <div>
     <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#">ITS</b-navbar-brand>
-
+      <router-link to="/">
+        <b-navbar-brand>ITS</b-navbar-brand>
+      </router-link>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="mr-auto">
-          <b-nav-item-dropdown text="Dashboard" right>
+          <b-nav-item-dropdown text="Dashboard" left>
             <b-dropdown-item href="#">123</b-dropdown-item>
             <b-dropdown-item href="#">456</b-dropdown-item>
             <b-dropdown-item href="#">789</b-dropdown-item>
+          </b-nav-item-dropdown>
+          <b-nav-item-dropdown text="Project" left>
+            <b-dropdown-item @click="$bvModal.show('modal-scoped')">create</b-dropdown-item>
+            <b-dropdown-item @click="goMyProject">my project</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
 
@@ -19,8 +24,8 @@
           <!-- <b-nav-form>
             <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
             <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-          </b-nav-form> -->
-          <b-button variant='transparent'>
+          </b-nav-form>-->
+          <b-button variant="transparent">
             <font-awesome-icon icon="info-circle" size="lg" />
           </b-button>
 
@@ -29,7 +34,7 @@
               <font-awesome-icon icon="user" size="lg" />
             </template>
             <b-dropdown-item href="#">Profile</b-dropdown-item>
-            <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+            <b-dropdown-item @click="logout">Sign Out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -39,8 +44,21 @@
 
 <script>
 export default {
-  name: 'NavBar'
-}
+  name: "NavBar",
+  Data() {
+    return {};
+  },
+  methods: {
+    createProject() {},
+    goMyProject() {
+      this.$router.push("/project");
+    },
+    logout() {
+      localStorage.removeItem("token");
+      this.$router.push("/login");
+    }
+  }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
