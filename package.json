@@ -37,40 +37,7 @@
     "env": {
       "node": false
     },
-    "extends": [
-      "plugin:vue/recommended",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
     "rules": {
-      "vue/no-dupe-keys": "warning",
-      "vue/html-end-tags": "warning",
-      "vue/html-indent": "warning",
-      "vue/html-quotes": "warning",
-      "vue/html-self-closing": "warning",
-      "vue/max-attributes-per-line": "warning",
-      "vue/multiline-html-element-content-newline": "warning",
-      "vue/mustache-interpolation-spacing": "warning",
-      "vue/name-property-casing": "warning",
-      "vue/no-multi-spaces": "warning",
-      "vue/no-spaces-around-equal-signs-in-attribute": "warning",
-      "vue/no-template-shadow": "warning",
-      "vue/prop-name-casing": "warning",
-      "vue/require-default-prop": "warning",
-      "vue/require-prop-types": "warning",
-      "vue/singleline-html-element-content-newline": "warning",
-      "vue/v-bind-style": "warning",
-      "vue/v-on-style": "warning",
-      "vue/attributes-order": "warning",
-      "vue/no-confusing-v-for-v-if": "warning",
-      "vue/no-v-html": "warning",
-      "vue/order-in-components": "warning",
-      "vue/this-in-template": "warning",
-      "vue/no-unused-components": "warning",
-      "vue/no-unused-vars": "warning",
-      "vue/require-v-for-key": "warning",
       "no-console": "off"
     }
   },
