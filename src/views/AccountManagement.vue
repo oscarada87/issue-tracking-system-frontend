@@ -147,15 +147,11 @@
           <template v-slot:cell(name)="row">{{ row.value }}</template>
 
           <template v-slot:cell(actions)="row">
-            <b-button
-              size="sm"
-              @click="info(row.item, row.index, $event.target)"
-              class="mr-1"
-            >Info modal</b-button>
+            <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">編輯</b-button>
             <b-button
               size="sm"
               @click="row.toggleDetails"
-            >{{ row.detailsShowing ? 'Hide' : 'Show' }} Details</b-button>
+            >{{ row.detailsShowing ? '隱藏' : '顯示' }}詳細</b-button>
           </template>
 
           <template v-slot:row-details="row">
@@ -169,14 +165,48 @@
         </b-table>
 
         <!-- Info modal -->
+        <!-- :title="infoModal.title" -->
         <b-modal
           :id="infoModal.id"
-          :title="infoModal.title"
+          title="編輯"
           ok-only
           @hide="resetInfoModal"
+          @show="resetInfoModal"
           centered
         >
-          <pre>{{ infoModal.content }}</pre>
+          <!-- <pre>{{ infoModal.content }}</pre> -->
+          <form ref="form" @submit.stop.prevent="handleSubmit">
+            <b-form-group id="name-group" label="使用者名稱" label-for="name" description="修改使用者名稱">
+              <b-form-input id="name" v-model="newData.name" required />
+            </b-form-group>
+            <b-form-group id="Email-group" label="信箱" label-for="Email" description="修改信箱">
+              <b-form-input id="Email" v-model="newData.Email" required />
+            </b-form-group>
+            <b-form-group
+              id="CharactorId-group"
+              label="Charactor"
+              label-for="CharactorId"
+              description="Change Charactor"
+            >
+              <!-- <b-form-input id="CharactorId" v-model="newData.CharactorId" required /> -->
+              <b-form-select
+                v-model="newData.CharactorId"
+                :options="CharactorOptions"
+                class="mb-3"
+                value-field="CharactorId"
+                text-field="name"
+                disabled-field="notEnabled"
+              ></b-form-select>
+            </b-form-group>
+            <b-form-group
+              id="LineId-group"
+              label="LineId"
+              label-for="LineId"
+              description="修改 LineId"
+            >
+              <b-form-input id="LineId" v-model="newData.LineId" required />
+            </b-form-group>
+          </form>
         </b-modal>
         <!-- Info modal END-->
       </b-card>
@@ -190,29 +220,102 @@ import NavBar from "@/components/NavBar.vue";
 export default {
   data() {
     return {
-      newata: {
+      newData: {
         name: "",
         account: "",
         password: "",
-        EMail: "",
+        Email: "",
         CharactorId: "",
         LineId: ""
       },
+      CharactorSelect: 1,
       items: [
-        { isActive: true, password: 40, account: "Dickerson", name: "Macdon" },
-        { isActive: false, password: 21, account: "Larsen", name: "Shaw" },
-        { isActive: false, password: 9, account: "Mini", name: "Navarro" },
+        {
+          CharactorId: 1,
+          isActive: true,
+          password: 40,
+          account: "Dickerson",
+          name: "Macdon"
+        },
+        {
+          CharactorId: 1,
+          isActive: false,
+          password: 21,
+          account: "Larsen",
+          name: "Shaw"
+        },
+        {
+          CharactorId: 1,
+          isActive: false,
+          password: 9,
+          account: "Mini",
+          name: "Navarro"
+        },
         /*_rowVariant: "success"*/
-        { isActive: false, password: 89, account: "Gene", name: "Wils" },
-        { isActive: true, password: 38, account: "Jami", name: "Carney" },
-        { isActive: false, password: 27, account: "Essie", name: "Dunlap" },
-        { isActive: true, password: 40, account: "Thor", name: "Macd" },
-        { isActive: true, password: 87, account: "Larsen", name: "Shaw" },
+        {
+          CharactorId: 2,
+          isActive: false,
+          password: 89,
+          account: "Gene",
+          name: "Wils"
+        },
+        {
+          CharactorId: 2,
+          isActive: true,
+          password: 38,
+          account: "Jami",
+          name: "Carney"
+        },
+        {
+          CharactorId: 2,
+          isActive: false,
+          password: 27,
+          account: "Essie",
+          name: "Dunlap"
+        },
+        {
+          CharactorId: 2,
+          isActive: true,
+          password: 40,
+          account: "Thor",
+          name: "Macd"
+        },
+        {
+          CharactorId: 2,
+          isActive: true,
+          password: 87,
+          account: "Larsen",
+          name: "Shaw"
+        },
         /*_cellVariants: { password: "danger", isActive: "warning" }*/
-        { isActive: false, password: 26, account: "Mitzi", name: "Navarro" },
-        { isActive: false, password: 22, account: "Genevieve", name: "Wilson" },
-        { isActive: true, password: 38, account: "John", name: "Carney" },
-        { isActive: false, password: 29, account: "Dick", name: "Dunlap" }
+        {
+          CharactorId: 3,
+          isActive: false,
+          password: 26,
+          account: "Mitzi",
+          name: "Navarro"
+        },
+        {
+          CharactorId: 3,
+          isActive: false,
+          password: 22,
+          account: "Genevieve",
+          name: "Wilson"
+        },
+        {
+          CharactorId: 3,
+          isActive: true,
+          password: 38,
+          account: "John",
+          name: "Carney"
+        },
+        {
+          CharactorId: 3,
+          isActive: false,
+          password: 29,
+          account: "Dick",
+          name: "Dunlap"
+        }
       ],
       fields: [
         {
@@ -235,6 +338,17 @@ export default {
           class: "text-left"
         },
         {
+          key: "CharactorId",
+          label: "使用者權限",
+          sortable: true,
+          sortDirection: "desc",
+          class: "text-left",
+          formatter: (value, key, item) => {
+            return this.CharactorOptions[value - 1].name;
+            //  value ? "Yes" : "No";
+          }
+        },
+        {
           key: "isActive",
           label: "啟用狀態",
           formatter: (value, key, item) => {
@@ -245,6 +359,11 @@ export default {
           filterByFormatted: true
         },
         { key: "actions", label: "操作" }
+      ],
+      CharactorOptions: [
+        { CharactorId: 1, name: "系統管理員" },
+        { CharactorId: 2, name: "開發人員、測試人員" },
+        { CharactorId: 3, name: "一般使用者" }
       ],
       totalRows: 1,
       currentPage: 1,
@@ -281,7 +400,9 @@ export default {
   },
   methods: {
     info(item, index, button) {
-      this.infoModal.title = item["name"].name;
+      this.newData.name = item.name;
+      this.infoModal.title = item.name;
+      this.newData.CharactorId = item.CharactorId
       // this.infoModal.title = `Row index: ${index}`;
       this.infoModal.content = JSON.stringify(item, null, 2);
       this.$root.$emit("bv::show::modal", this.infoModal.id, button);
@@ -289,6 +410,14 @@ export default {
     resetInfoModal() {
       this.infoModal.title = "";
       this.infoModal.content = "";
+      newData = {
+        name: "",
+        account: "",
+        password: "",
+        Email: "",
+        CharactorId: "",
+        LineId: ""
+      };
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
