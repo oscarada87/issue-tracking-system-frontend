@@ -4,7 +4,7 @@
     <b-container fluid class="mt-3">
       <b-card>
         <!-- User Interface controls -->
-        <b-row class="mb-5">
+        <b-row class="mb-4">
           <b-col lg="6" class="my-1">
             <b-form-group
               label="Sort"
@@ -52,7 +52,6 @@
             </b-form-group>
           </b-col>
           <!-- 初始排序方式 END-->
-
           <!-- 輸入搜尋 -->
           <b-col lg="6" class="my-1">
             <b-form-group
@@ -77,7 +76,6 @@
             </b-form-group>
           </b-col>
           <!-- 輸入搜尋 END -->
-
           <!-- 勾選要過濾的欄位 -->
           <b-col lg="6" class="my-1">
             <b-form-group
@@ -126,8 +124,25 @@
             ></b-pagination>
           </b-col>
           <!-- 選擇頁數按鈕 END -->
+          <b-col lg="6" class="my-2">
+            <b-button
+              class="float-left"
+              block
+              pill
+              variant="outline-danger"
+              size="lg"
+              v-b-toggle.create-new-user-collapse
+            >新增使用者</b-button>
+          </b-col>
+          <b-col lg="6" class="my-1"></b-col>
+          <b-col lg="3" class="my-2">
+            <b-collapse id="create-new-user-collapse" class="mt-2 float-center">
+              <b-card>
+                <Register @registerSuccess="createUser" />
+              </b-card>
+            </b-collapse>
+          </b-col>
         </b-row>
-
         <!-- Main table element -->
         <b-table
           show-empty
@@ -145,7 +160,6 @@
           @filtered="onFiltered"
         >
           <template v-slot:cell(name)="row">{{ row.value }}</template>
-
           <template v-slot:cell(actions)="row">
             <b-button
               size="sm"
@@ -159,14 +173,13 @@
               variant="info"
               class="mr-1"
             >{{ row.detailsShowing ? '隱藏' : '顯示' }}詳細</b-button>
-
             <b-button
               size="sm"
-              @click="deleteAccount(row.item, row.index, $event.target)"
+              @click="deleteItem=row.item"
+              v-b-modal.check-delete-modal
               variant="danger"
             >刪除</b-button>
           </template>
-
           <template v-slot:row-details="row">
             <b-card>
               <ul class="text-left">
@@ -175,9 +188,8 @@
             </b-card>
           </template>
         </b-table>
-
         <!-- Info modal -->
-        <b-modal :id="infoModal.id" title="編輯" ok-only @hide="resetInfoModal" centered>
+        <b-modal :id="infoModal.id" title="編輯" hide-footer @hide="resetInfoModal" centered>
           <b-form ref="form" @submit.stop.prevent="handleSubmit">
             <b-form-group id="name-group" label="使用者名稱" label-for="name" description="修改使用者名稱">
               <b-form-input id="name" v-model="newData.name" required />
@@ -211,6 +223,13 @@
           </b-form>
         </b-modal>
         <!-- Info modal END-->
+        <!-- check delete modal-->
+        <b-modal id="check-delete-modal" hide-footer>
+          <b-alert show variant="warning" class="text-center">確定刪除？</b-alert>
+          <b-button class="float-right" @click="deleteAccount(false)">取消</b-button>
+          <b-button variant="danger" class="float-right mr-2" @click="deleteAccount(true)">確定</b-button>
+        </b-modal>
+        <!-- check delete modal END-->
       </b-card>
     </b-container>
   </div>
@@ -218,6 +237,7 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import Register from "@/components/Register.vue";
 import axios from "axios";
 import { async } from "q";
 
@@ -260,7 +280,7 @@ export default {
           sortable: true,
           sortDirection: "desc",
           class: "text-center",
-          formatter: (value/*, key, item*/) => {
+          formatter: (value /*, key, item*/) => {
             return value
               ? this.CharactorOptions[value].name
               : this.CharactorOptions[0].name;
@@ -282,8 +302,8 @@ export default {
       ],
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
+      perPage: 10,
+      pageOptions: [10, 15, 20],
       sortBy: "",
       sortDesc: false,
       sortDirection: "asc",
@@ -293,7 +313,8 @@ export default {
         id: "info-modal",
         title: "",
         content: ""
-      }
+      },
+      deleteItem: null
     };
   },
   computed: {
@@ -307,7 +328,8 @@ export default {
     }
   },
   components: {
-    NavBar
+    NavBar,
+    Register
   },
   mounted() {
     // Set the initial number of items
@@ -321,7 +343,8 @@ export default {
       this.newData.eMail = item.eMail;
       this.newData.lineId = item.lineId;
       this.infoModal.content = JSON.stringify(item, null, 2);
-      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      this.$bvModal.show(this.infoModal.id);
     },
     resetInfoModal() {
       this.infoModal.title = "";
@@ -355,28 +378,42 @@ export default {
         .catch(async err => {
           return await err.response;
         });
+      if (res.status == 401) {
+        localStorage.removeItem("token", res.data.token);
+        localStorage.removeItem("userId", res.data.userId);
+        this.$router.push("/");
+      }
       this.items = res.data;
       this.totalRows = this.items.length;
     },
-    async deleteAccount(item) {
-      const token = localStorage.getItem("token");
-      let res = await axios
-        .delete(`http://lspssapple.asuscomm.com:81/api/user/${item.id}`, {
-          headers: {
-            "content-type": "application/json;charset=utf-8",
-            Authorization: `Bearer ${token}`
-          }
-        })
-        .then(async res => {
+    async deleteAccount(isCanDelete) {
+      this.$bvModal.hide("check-delete-modal");
+      if (isCanDelete) {
+        const token = localStorage.getItem("token");
+        let res = await axios
+          .delete(
+            `http://lspssapple.asuscomm.com:81/api/user/${this.deleteItem.id}`,
+            {
+              headers: {
+                "content-type": "application/json;charset=utf-8",
+                Authorization: `Bearer ${token}`
+              }
+            }
+          )
+          .then(async res => {
+            this.fetchData();
+            this.deleteItem = null;
+            return await res;
+          })
+          .catch(async err => {
+            return await err.response;
+          });
+        if (res.status > 200 && res.status < 500) {
+          this.deleteItem = null;
           this.fetchData();
-          return await res;
-        })
-        .catch(async err => {
-          return await err.response;
-        });
-      if (res.status > 200 && res.status < 500) {
-        this.fetchData();
+        }
       }
+
       // item.name = "tese";
       // item.account = "tese";
       // item.password = "tese";
@@ -384,7 +421,11 @@ export default {
       // item.charactorId = 2;
       // item.lineId = "";
     },
-    async handleSubmit() {}
+    async handleSubmit() {},
+    createUser() {
+      this.fetchData();
+      this.$root.$emit("bv::toggle::collapse", "create-new-user-collapse");
+    }
   }
 };
 </script>
