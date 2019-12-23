@@ -9,37 +9,37 @@
                 <b-form-group id="input-group-issue">
                     <b-row>
                         <b-col cols="3">
-                            <label for="input-IssueNumber">問題單號</label>
-                            <b-form-input id="input-IssueNumber" v-model="issue.IssueNumber" type="string" readonly>
+                            <label for="input-number">問題單號</label>
+                            <b-form-input id="input-number" v-model="issue.number" type="string" required>
                             </b-form-input>
                         </b-col>
                         <b-col cols="6">
-                            <label for="input-IssueSummary">問題標題</label>
-                            <b-form-input id="input-IssueSummary" v-model="issue.IssueSummary" type="string" required>
+                            <label for="input-summary">問題標題</label>
+                            <b-form-input id="input-summary" v-model="issue.summary" type="string" required>
                             </b-form-input>
                         </b-col>
                         <b-col cols="3">
                             <label for="input-IssueCreateUser">創立者</label>
-                            <b-form-input id="input-IssueCreateUser" v-model="issue.CreateUser" type="string" readonly>
+                            <b-form-input id="input-IssueCreateUser" v-model="issue.createUser" type="string" readonly>
                             </b-form-input>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col>
-                            <label for="input-Description">問題描述</label>
-                            <b-form-textarea id="input-Description" v-model="issue.Description">
+                            <label for="input-description">問題描述</label>
+                            <b-form-textarea id="input-description" v-model="issue.description">
                             </b-form-textarea>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col>
-                            <label for="input-AssigneeId">指派者</label>
-                            <b-form-input id="input-AssigneeId" v-model="issue.AssigneeId" type="string">
+                            <label for="input-assignerId">指派者</label>
+                            <b-form-input id="input-assignerId" v-model="issue.assignerId" type="string">
                             </b-form-input>
                         </b-col>
                         <b-col>
-                            <label for="input-ReporterId">回報者</label>
-                            <b-form-input id="input-ReporterId" v-model="issueReporterId" type="string">
+                            <label for="input-reporterId">回報者</label>
+                            <b-form-input id="input-reporterId" v-model="issue.reporterId" type="string">
                             </b-form-input>
                         </b-col>
                     </b-row>
@@ -62,38 +62,47 @@
             return {
                 searchText: '',
                 issue: {
-                    IssueNumber: '123',
-                    IssueSummary: '',
-                    Description: '',
-                    AssigneeId: '',
-                    ReporterId: '',
-                    Estimated: '',
-                    EstimatedStartTime: '',
-                    EstimatedEndTime: '',
-                    ActualStartTime: '',
-                    ActualEndTime: '',
-                    KindID: '',
-                    ServerityId: '',
-                    StatusId: '',
-                    UrgencyId: '',
-                    ProjectId: '',
-                    CreateUser: '',
+                    number: '',
+                    summary: '',
+                    description: '',
+                    assignerId: '',
+                    reporterId: '',
+                    estimatedTime: '',
+                    estimatedStartTime: '',
+                    estimatedEndTime: '',
+                    actualStartTime: '',
+                    actualEndTime: '',
+                    resolveTime: '',
+                    kindId: '',
+                    serverityId: '',
+                    statusId: '',
+                    urgencyId: '',
+                    createTime: '',
+                    createUser: '',
+                    modifyTime: '',
                     ModifyUser: ''
                 },
             };
         },
-        computed: {
-            handleIssues() {
+        methods: {
+            getIssue() {
                 const vm = this;
-                return _.filter(vm.beverages, function (beverage) {
-                    return beverage.Beverage_Name.match(vm.searchText);
-                });
+                const api = 'http://lspssapple.asuscomm.com:81/api/issue/' + vm.$route.params.id;
+                const token = localStorage.getItem('token');
+                this.$http.get(
+                    api,
+                    { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
+                ).
+                then((response) => {
+                    console.log(response)
+                    if(response.status == 200){
+                        vm.issue = response.data;
+                    }
+                }); 
             },
         },
-        methods: {
-            editIssue() {
-                //create issue
-            }
+        created() {
+            this.getIssue();
         }
     }
 </script>

@@ -17,6 +17,7 @@
             <b-dropdown-item @click="$bvModal.show('modal-scoped')">create</b-dropdown-item>
             <b-dropdown-item @click="goMyProject">my project</b-dropdown-item>
           </b-nav-item-dropdown>
+          <b-nav-item href="#/issue">Issue</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

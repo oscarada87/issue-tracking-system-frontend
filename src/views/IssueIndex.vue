@@ -7,7 +7,7 @@
                     <input class="form-control searchbar" type="text" placeholder="請輸入關鍵字" v-model="searchText">
                 </div>
                 <div class="col col-auto ml-0">
-                    <button class="btn btn-primary" @click.prevent="clearTempIssue(); openAddModal()">新增問題</button>
+                    <button class="btn btn-primary" @click.prevent="openAddModal()">新增問題</button>
                 </div>
             </div>
         </div>
@@ -27,34 +27,33 @@
                 <tr v-for="(item, id) in handleIssues" :key="id">
                     <td class="align-middle">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            @click.prevent="checkIssue()">
-                            <font-awesome-icon icon="edit" />
+                            @click.prevent="checkIssue(item)">
+                            <font-awesome-icon icon="search" />
                         </button>
                     </td>
                     <td class="align-middle">
-                        {{ item.IssueNumber }}
+                        {{ item.number }}
                     </td>
                     <td class="align-middle">
-                        {{ item.IssueSummary }}
+                        {{ item.summary }}
                     </td>
                     <td class="align-middle">
-                        {{ item.AssigneeId }}
+                        {{ item.assignerId }}
                     </td>
                     <td class="align-middle">
-                        {{ item.ReporterId }}
+                        {{ item.reporterId }}
                     </td>
                     <td class="align-middle">
-                        {{ item.StatusId }}
+                        {{ item.statusId }}
                     </td>
                     <td class="align-middle">
-                        {{ item.CreateTime }}
+                        {{ item.createTime }}
                     </td>
                     <td class="align-middle">
-                        {{ item.ModifyTime }}
+                        {{ item.modifyTime }}
                     </td>
                     <td class="align-middle">
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                            @click.prevent="tempIssue = item; openDeleteModal()">
+                        <button type="button" class="btn btn-outline-danger btn-sm" @click.prevent="tempIssue = item; openDeleteModal(item)">
                             <font-awesome-icon icon="trash-alt" />
                         </button>
                     </td>
@@ -63,36 +62,51 @@
         </table>
 
         <!-- Add Issue Modal -->
-        <b-modal id="addIssueModal" title="新增問題" @show="clearTempIssue" @ok="createIssue">
+        <b-modal id="addIssueModal" title="新增問題" @ok="createIssue">
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm">
                         <div class="form-group">
                             <label for="title">問題名稱</label>
                             <input type="text" class="form-control" id="title" placeholder="" required
-                                v-model="tempIssue.IssueSummary">
-                        </div>
-                        <div class="form-group">
-                            <label for="title">所屬專案</label>
-                            <input type="text" class="form-control" id="title" placeholder="" required
-                                v-model="tempIssue.ProjectId">
+                                v-model="tempIssue.summary">
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="origin_price">指派人</label>
                                 <input type="text" class="form-control" id="origin_price" placeholder=""
-                                    v-model="tempIssue.AssigneeId">
+                                    v-model="tempIssue.assignerId">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="price">回報人</label>
                                 <input type="text" class="form-control" id="price" placeholder=""
-                                    v-model="tempIssue.RepoterId">
+                                    v-model="tempIssue.repoterId">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="description">問題描述</label>
                             <textarea type="text" class="form-control" id="description" placeholder=""
-                                v-model="tempIssue.Description"></textarea>
+                                v-model="tempIssue.description"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="statusId">問題狀態</label>
+                                <b-form-select v-model="tempIssue.statusId" id="statusId" :options="statusOptions" size="sm" class="mt-3" required></b-form-select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="kindId">問題類別</label>
+                                <b-form-select v-model="tempIssue.kindId" id="kindId" :options="kindOptions" size="sm" class="mt-3" required></b-form-select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="serverityId">問題嚴重性</label>
+                                <b-form-select v-model="tempIssue.serverityId" id="serverityId" :options="serverityOptions" size="sm" class="mt-3" required></b-form-select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="urgencyId">問題緊急性</label>
+                                <b-form-select v-model="tempIssue.urgencyId" id="urgencyId" :options="urgencyOptions" size="sm" class="mt-3" required></b-form-select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,39 +116,65 @@
 </template>
 
 <script>
-    // @ is an alias to /src
-    // import HelloWorld from '@/components/HelloWorld.vue'
     import _ from 'lodash';
     import NavBar from '@/components/NavBar.vue';
-    // import FilterSideBar from '@/components/FilterSideBar.vue';
 
     export default {
         name: 'IssueIndex',
         components: {
             NavBar
-            // FilterSideBar
         },
         data() {
             return {
                 searchText: '',
                 createModal: false,
                 tempIssue: {
-                    IssueNumber: '',
-                    IssueSummary: '',
-                    AssigneeId: '',
-                    ReporterId: '',
-                    StatusId: '',
-                    CreateUser: '',
-                    Description: '',
-                    ProjectId: ''
-                }
+                    number: '',
+                    summary: '',
+                    assignerId: '',
+                    reporterId: '',
+                    statusId: '',
+                    description: '',
+                    kindId: '',
+                    serverityId: '',
+                    urgencyId: '',
+                    projectId: ''
+                },
+                issues: [],
+                statusOptions:[
+                    { value: 1, text: '未分配的問題' },
+                    { value: 2, text: '已分配未開始的問題' },
+                    { value: 3, text: '正在做的問題' },
+                    { value: 4, text: '完成後被重新打開的問題' },
+                    { value: 5, text: '已完成的問題' },
+                    { value: 6, text: '待定的問題' }
+                ],
+                kindOptions:[
+                    { value: 1, text: '疑難排解' },
+                    { value: 2, text: '功能開發' },
+                    { value: 3, text: '平面設計' },
+                    { value: 4, text: '其他' }
+                ],
+                serverityOptions:[
+                    { value: 1, text: '未知' },
+                    { value: 2, text: '不重要的' },
+                    { value: 3, text: '次要的' },
+                    { value: 4, text: '危急的' },
+                    { value: 5, text: '重要的' }
+                ],
+                urgencyOptions:[
+                    { value: 1, text: '緊急' },
+                    { value: 2, text: '盡速' },
+                    { value: 3, text: '普通' },
+                    { value: 4, text: '不急' }
+                ],
             };
         },
         computed: {
             handleIssues() {
                 const vm = this;
                 return _.filter(vm.issues, function (issue) {
-                    return issue.IssueSummary.match(vm.searchText);
+                    return issue.summary.match(vm.searchText);
                 });
             },
         },
@@ -142,14 +182,15 @@
             getIssueList() {
                 const api = 'http://lspssapple.asuscomm.com:81/api/issue';
                 const vm = this;
+                const token = localStorage.getItem('token');
                 this.$http.get(
                     api,
-                    { headers: { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaHJpcyIsImp0aSI6IjI2YjA1NzdmLTg3M2UtNDk3Yi1hZmEyLTYyNmRmMTE0MzYwZiIsIm5iZiI6MTU3NzA5NjQ1OSwiZXhwIjoxNTc3MDk4MjU5LCJpYXQiOjE1NzcwOTY0NTksImlzcyI6Iklzc3VlVHJhY2tpbmdTeXN0ZW0ifQ.B_MH770Tkq6gapFYJJ0Lx46JjkYDuaY6oNJ3BC3rBVY", "content-type": "application/json;charset=utf-8"}}
+                    { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
                 ).
                 then((response) => {
-                    console.log(response)
-                    if(response.data.success){
-                        vm.issues = response.data.data;
+                    // console.log(response)
+                    if(response.status == 200){
+                        vm.issues = response.data;
                     }
                 }); 
             },
@@ -159,7 +200,7 @@
             closeAddModal() {
                 this.$bvModal.hide('addIssueModal');
             },
-            openDeleteModal() {
+            openDeleteModal(issue) {
                 this.$bvModal.msgBoxConfirm('確定刪除?',{
                     okTitle: '刪除',
                     cancelTitle: '取消',
@@ -167,39 +208,57 @@
                 })
                 .then(value => {
                     if (value){
-                        //delete issue
+                        const api = 'http://lspssapple.asuscomm.com:81/api/issue/' + issue.id;
+                        const vm = this;
+                        const token = localStorage.getItem('token');
+                        this.$http.delete(
+                            api,
+                            { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
+                        ).
+                        then((response) => {
+                            console.log(response)
+                            if(response.status == 200){
+                                alert('刪除問題成功!');
+                                this.$router.go();
+                            }
+                        }); 
                     }
                 })
             },
             clearTempIssue() {
                 const emptyIssue = {
-                    IssueNumber: '',
-                    IssueSummary: '',
-                    Assignee: '',
-                    Reporter: '',
-                    Status: '',
-                    CreateUser: '',
-                    Description: ''
+                    number: '',
+                    summary: '',
+                    assignerId: '',
+                    reporterId: '',
+                    statusId: '',
+                    createUser: '',
+                    description: ''
                 };
                 this.tempIssue = emptyIssue;
             },
             createIssue(){
                 const api = 'http://lspssapple.asuscomm.com:81/api/issue';
                 const vm = this;
+                const token = localStorage.getItem('token');
+                vm.tempIssue.createUser = localStorage.getItem('user_id');
+                vm.tempIssue.number = Math.floor(100000 + Math.random() * 900000)
                 this.$http.post(
                     api,
                     vm.tempIssue,
-                    { headers: { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaHJpcyIsImp0aSI6IjI2YjA1NzdmLTg3M2UtNDk3Yi1hZmEyLTYyNmRmMTE0MzYwZiIsIm5iZiI6MTU3NzA5NjQ1OSwiZXhwIjoxNTc3MDk4MjU5LCJpYXQiOjE1NzcwOTY0NTksImlzcyI6Iklzc3VlVHJhY2tpbmdTeXN0ZW0ifQ.B_MH770Tkq6gapFYJJ0Lx46JjkYDuaY6oNJ3BC3rBVY", "content-type": "application/json;charset=utf-8"}}
+                    { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
                 ).
                 then((response) => {
                     console.log(response)
-                    if(response.data.success){
+                    if(response.status == 200){
                        alert('新增問題成功!');
+                       this.$router.go();
                     }
                 }); 
             },
-            checkIssue(){
-                //go to certain issue page
+            checkIssue(issue){
+                const vm = this;
+                vm.$router.push({ path: `/issue/${issue.id}`})
             }
         },
         created(){
