@@ -33,7 +33,7 @@
             </b-form-group>
           </b-col>
           <!-- User Interface controls END -->
-          <!-- 排序方式 -->
+          <!-- 初始排序方式 -->
           <b-col lg="6" class="my-1">
             <b-form-group
               label="Initial sort"
@@ -47,11 +47,11 @@
                 v-model="sortDirection"
                 id="initialSortSelect"
                 size="sm"
-                :options="['asc', 'desc', 'last']"
+                :options="['asc', 'desc', 'name']"
               ></b-form-select>
             </b-form-group>
           </b-col>
-          <!-- 排序方式 END-->
+          <!-- 初始排序方式 END-->
 
           <!-- 輸入搜尋 -->
           <b-col lg="6" class="my-1">
@@ -89,9 +89,9 @@
               class="mb-0"
             >
               <b-form-checkbox-group v-model="filterOn" class="mt-1">
-                <b-form-checkbox value="name">Name</b-form-checkbox>
-                <b-form-checkbox value="age">Age</b-form-checkbox>
-                <b-form-checkbox value="isActive">Active</b-form-checkbox>
+                <b-form-checkbox value="name">使用者名稱</b-form-checkbox>
+                <b-form-checkbox value="account">使用者帳號</b-form-checkbox>
+                <b-form-checkbox value="isActive">啟用狀態</b-form-checkbox>
               </b-form-checkbox-group>
             </b-form-group>
           </b-col>
@@ -144,7 +144,7 @@
           :sort-direction="sortDirection"
           @filtered="onFiltered"
         >
-          <template v-slot:cell(name)="row">{{ row.value.first }} {{ row.value.last }}</template>
+          <template v-slot:cell(name)="row">{{ row.value }}</template>
 
           <template v-slot:cell(actions)="row">
             <b-button
@@ -161,6 +161,7 @@
           <template v-slot:row-details="row">
             <b-card>
               <ul class="text-left">
+                <!-- <li v-for="(value, key) in row.item" :key="key">{{ row.item['isActive'] }}</li> -->
                 <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
               </ul>
             </b-card>
@@ -189,54 +190,45 @@ import NavBar from "@/components/NavBar.vue";
 export default {
   data() {
     return {
+      newata: {
+        name: "",
+        account: "",
+        password: "",
+        EMail: "",
+        CharactorId: "",
+        LineId: ""
+      },
       items: [
-        {
-          isActive: true,
-          age: 40,
-          name: { first: "Dickerson", last: "Macdonald" }
-        },
-        { isActive: false, age: 21, name: { first: "Larsen", last: "Shaw" } },
-        {
-          isActive: false,
-          age: 9,
-          name: { first: "Mini", last: "Navarro" }
-          //_rowVariant: "success"
-        },
-        { isActive: false, age: 89, name: { first: "Geneva", last: "Wilson" } },
-        { isActive: true, age: 38, name: { first: "Jami", last: "Carney" } },
-        { isActive: false, age: 27, name: { first: "Essie", last: "Dunlap" } },
-        { isActive: true, age: 40, name: { first: "Thor", last: "Macdonald" } },
-        {
-          isActive: true,
-          age: 87,
-          name: { first: "Larsen", last: "Shaw" }
-          //_cellVariants: { age: "danger", isActive: "warning" }
-        },
-        { isActive: false, age: 26, name: { first: "Mitzi", last: "Navarro" } },
-        {
-          isActive: false,
-          age: 22,
-          name: { first: "Genevieve", last: "Wilson" }
-        },
-        { isActive: true, age: 38, name: { first: "John", last: "Carney" } },
-        { isActive: false, age: 29, name: { first: "Dick", last: "Dunlap" } }
+        { isActive: true, password: 40, account: "Dickerson", name: "Macdon" },
+        { isActive: false, password: 21, account: "Larsen", name: "Shaw" },
+        { isActive: false, password: 9, account: "Mini", name: "Navarro" },
+        /*_rowVariant: "success"*/
+        { isActive: false, password: 89, account: "Gene", name: "Wils" },
+        { isActive: true, password: 38, account: "Jami", name: "Carney" },
+        { isActive: false, password: 27, account: "Essie", name: "Dunlap" },
+        { isActive: true, password: 40, account: "Thor", name: "Macd" },
+        { isActive: true, password: 87, account: "Larsen", name: "Shaw" },
+        /*_cellVariants: { password: "danger", isActive: "warning" }*/
+        { isActive: false, password: 26, account: "Mitzi", name: "Navarro" },
+        { isActive: false, password: 22, account: "Genevieve", name: "Wilson" },
+        { isActive: true, password: 38, account: "John", name: "Carney" },
+        { isActive: false, password: 29, account: "Dick", name: "Dunlap" }
       ],
       fields: [
         {
           key: "name",
           label: "使用者名稱",
           sortable: true,
-          sortDirection: "desc",
-          class: "text-right"
+          sortDirection: "desc"
         },
         {
-          key: "age",
+          key: "account",
           label: "使用者帳號",
           sortable: true,
           class: "text-center"
         },
         {
-          key: "x",
+          key: "password",
           label: "使用者密碼",
           sortable: true,
           sortDirection: "desc",
@@ -289,7 +281,8 @@ export default {
   },
   methods: {
     info(item, index, button) {
-      this.infoModal.title = `Row index: ${index}`;
+      this.infoModal.title = item["name"].name;
+      // this.infoModal.title = `Row index: ${index}`;
       this.infoModal.content = JSON.stringify(item, null, 2);
       this.$root.$emit("bv::show::modal", this.infoModal.id, button);
     },
