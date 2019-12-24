@@ -67,7 +67,7 @@ export default {
           });
         if (res.status >= 200 && res.status < 300) {
           localStorage.setItem("token", res.data.token);
-          localStorage.setItem("userId", res.data.userId);
+          localStorage.setItem("user_id", res.data.userId);
           this.isPasswordOrUserIDError = false;
           this.$router.push("/");
         } else {
