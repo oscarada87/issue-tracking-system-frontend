@@ -184,7 +184,7 @@
                 then((response) => {
                     // console.log(response)
                     if(response.status == 200){
-                        response.data.forEach(user => vm.users.push({ value: user.id, text: user.account }));
+                        response.data.forEach(user => vm.users.push({ value: user.id, text: user.name }));
                     }
                 }); 
             },

@@ -14,12 +14,11 @@
         <table class="table mt-4 table-striped">
             <thead>
                 <th style="width: 3%" scope="col">查看</th>
-                <th style="width: 10%" scope="col">代號</th>
+                <th style="width: 5%" scope="col">代號</th>
                 <th style="width: 10%" scope="col">標題</th>
-                <th style="width: 5%; min-width: 105px" scope="col">指派者ID</th>
-                <th style="width: 5%; min-width: 105px" scope="col">回報者ID</th>
+                <th style="width: 7%; min-width: 105px" scope="col">指派者ID</th>
+                <th style="width: 7%; min-width: 105px" scope="col">回報者ID</th>
                 <th style="width: 13%" scope="col">狀態</th>
-                <th style="width: 7%" scope="col">創立於</th>
                 <th style="width: 7%" scope="col">創立者ID</th>
                 <th style="width: 3%" scope="col">刪除</th>
             </thead>
@@ -38,19 +37,16 @@
                         {{ item.summary }}
                     </td>
                     <td class="align-middle">
-                        {{ item.assigneeId }}
+                        <b-form-select v-model="item.assigneeId" :options="users" disabled></b-form-select>
                     </td>
                     <td class="align-middle">
-                        {{ item.reporterId }}
+                        <b-form-select v-model="item.reporterId" :options="users" disabled></b-form-select>
                     </td>
                     <td class="align-middle">
                         {{ item.statusId }}
                     </td>
                     <td class="align-middle">
-                        {{ item.createTime }}
-                    </td>
-                    <td class="align-middle">
-                        {{ item.createUser }}
+                        <b-form-select v-model="item.createUser" :options="users" disabled></b-form-select>
                     </td>
                     <td class="align-middle">
                         <button type="button" class="btn btn-outline-danger btn-sm" @click.prevent="tempIssue = item; openDeleteModal(item)">
@@ -252,7 +248,6 @@
                 const token = localStorage.getItem('token');
                 vm.tempIssue.createUser = parseInt(localStorage.getItem('user_id'));
                 vm.tempIssue.number = Math.floor(100000 + Math.random() * 900000)
-                // console.log(this.tempIssue)
                 this.$http.post(
                     api,
                     vm.tempIssue,
@@ -281,7 +276,7 @@
                 then((response) => {
                     // console.log(response)
                     if(response.status == 200){
-                        response.data.forEach(user => vm.users.push({ value: user.id, text: user.account }));
+                        response.data.forEach(user => vm.users.push({ value: user.id, text: user.name }));
                     }
                 }); 
             },
