@@ -1,17 +1,14 @@
 <template>
   <div>
     <NavBar />
-    <b-modal id="modal-scoped" centered hide-footer no-close-on-backdrop :title="titleName[tabIndex]">
+    <b-modal id="modal-scoped" centered hide-footer no-close-on-backdrop no-close-on-esc :title="titleName[tabIndex]">
       <b-tabs content-class="mt-3" v-model="tabIndex" lazy>
-
         <b-tab title="Login">
           <Login/>
         </b-tab>
-        
-        <b-tab title="Register">
-          <Register/>
+        <b-tab title="Register" >
+          <Register @registerSuccess="tabIndex=0"/>
         </b-tab>
-
       </b-tabs>
     </b-modal>
   </div>
@@ -26,6 +23,7 @@ export default {
   name: "LoginRegisterDialog",
   mounted() {
     this.$bvModal.show("modal-scoped");
+    this.tabIndex = 0
   },
   data() {
     return {
@@ -40,7 +38,7 @@ export default {
       } else {
         return ["bg-light", "text-info"];
       }
-    }
+    },
   },
   components: {
     NavBar,

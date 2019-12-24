@@ -7,7 +7,6 @@
         label-for="input-userName"
         :invalid-feedback="invalidUserNameFeedback"
         :valid-feedback="validFeedback"
-        :state="state"
       >
         <b-form-input
           id="input-userName"
@@ -25,7 +24,6 @@
         label-for="input-userID"
         :invalid-feedback="invalidUserIDFeedback"
         :valid-feedback="validFeedback"
-        :state="state"
       >
         <b-form-input
           id="input-userID"
@@ -43,7 +41,6 @@
         label-for="input-password"
         :invalid-feedback="invalidPasswordFeedback"
         :valid-feedback="validFeedback"
-        :state="state"
       >
         <b-form-input
           id="input-password"
@@ -72,56 +69,64 @@
           required
         ></b-form-input>
       </b-form-group>
-
       <b-button type="submit" :disabled="!btnLoginEnabled">Sign up</b-button>
     </b-form>
+    <b-modal id="Alertmodal" ref="AlertModal" ok-only centered>
+      <b-alert class="left" show variant="danger">{{ errorMessage }}</b-alert>
+    </b-modal>
   </div>
 </template>
 
 
 <script>
 import axios from "axios";
+import { async } from "q";
 
 export default {
-  mounted() {
-    this.$bvModal.show("modal-register-scoped");
-  },
-  props: ["titleName"],
   data() {
     return {
       userID: "",
       userName: "",
       password: "",
       email: "",
-      isPasswordOrUserNameError: false
+      isPasswordOrUserNameError: false,
+      errorMessage: "an existing item already exists"
     };
   },
   components: {},
   methods: {
-    register() {
+    async register() {
       //write login authencation logic here!
-      axios
-        .post(
-          "http://lspssapple.asuscomm.com:81/api/user/account",
-          {
-            account: this.userID,
-            password: this.password,
-            name: this.userName,
-            email: this.email
-          },
-          { headers: { "content-type": "application/json;charset=utf-8" } }
-        )
-        .then(res => {
-          console.log(res.data);
-          // this.isPasswordOrUserIDError = false;
-          // this.$router.push("/");
-          // localStorage.setItem("token", res.data);
+      let data = {
+        account: this.userID,
+        password: this.password,
+        name: this.userName,
+        email: this.email,
+        charactorId: 2
+      };
+      let res = null;
+      res = await axios
+        .post("http://lspssapple.asuscomm.com:81/api/user", data, {
+          headers: { "content-type": "application/json;charset=utf-8" }
         })
-        .catch(err => {
-          console.log(err);
-          // this.isPasswordOrUserIDError = true;
+        .then(async function(res) {
+          return res;
+        })
+        .catch(async function(err) {
+          return err.response;
         });
-      console.log(this.userID, this.userName, this.password, this.email);
+      if (res.status >= 200 && res.status < 300) {
+        console.log(res.data);
+        this.$emit("registerSuccess");
+      } else if (res.status == 400) {
+        this.errorMessage = res.data;
+        this.isPasswordOrUserIDError = true;
+        this.$refs.AlertModal.show();
+      } else if (res.status == 409) {
+        this.errorMessage = res.data;
+        this.isPasswordOrUserIDError = true;
+        this.$refs.AlertModal.show();
+      }
     }
   },
   computed: {
@@ -175,7 +180,7 @@ export default {
       }
     },
     validFeedback() {
-      // return this.state === true ? "Thank you" : "";
+      return "";
     }
   }
 };

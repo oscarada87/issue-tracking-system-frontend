@@ -2,9 +2,13 @@
   <div>
     <NavBar />
     <b-container fluid class="mt-3">
+      <b-row>
+      <b-col lg="4" class="my-1"><h1>使用者管理</h1></b-col>
+      <b-col lg="8" class="my-1"></b-col>
+      </b-row>
       <b-card>
         <!-- User Interface controls -->
-        <b-row class="mb-5">
+        <b-row class="mb-4">
           <b-col lg="6" class="my-1">
             <b-form-group
               label="Sort"
@@ -52,7 +56,6 @@
             </b-form-group>
           </b-col>
           <!-- 初始排序方式 END-->
-
           <!-- 輸入搜尋 -->
           <b-col lg="6" class="my-1">
             <b-form-group
@@ -77,7 +80,6 @@
             </b-form-group>
           </b-col>
           <!-- 輸入搜尋 END -->
-
           <!-- 勾選要過濾的欄位 -->
           <b-col lg="6" class="my-1">
             <b-form-group
@@ -91,7 +93,7 @@
               <b-form-checkbox-group v-model="filterOn" class="mt-1">
                 <b-form-checkbox value="name">使用者名稱</b-form-checkbox>
                 <b-form-checkbox value="account">使用者帳號</b-form-checkbox>
-                <b-form-checkbox value="isActive">啟用狀態</b-form-checkbox>
+                <b-form-checkbox value="eMail">信箱</b-form-checkbox>
               </b-form-checkbox-group>
             </b-form-group>
           </b-col>
@@ -126,8 +128,25 @@
             ></b-pagination>
           </b-col>
           <!-- 選擇頁數按鈕 END -->
+          <b-col lg="6" class="my-2">
+            <b-button
+              class="float-left"
+              block
+              pill
+              variant="outline-danger"
+              size="lg"
+              v-b-toggle.create-new-user-collapse
+            >新增使用者</b-button>
+          </b-col>
+          <b-col lg="6" class="my-1"></b-col>
+          <b-col lg="6" class="my-2">
+            <b-collapse id="create-new-user-collapse" class="mt-2">
+              <b-card class="float-right">
+                <Register @registerSuccess="createUser" />
+              </b-card>
+            </b-collapse>
+          </b-col>
         </b-row>
-
         <!-- Main table element -->
         <b-table
           show-empty
@@ -145,40 +164,77 @@
           @filtered="onFiltered"
         >
           <template v-slot:cell(name)="row">{{ row.value }}</template>
-
           <template v-slot:cell(actions)="row">
             <b-button
               size="sm"
               @click="info(row.item, row.index, $event.target)"
+              variant="success"
               class="mr-1"
-            >Info modal</b-button>
+            >編輯</b-button>
             <b-button
               size="sm"
               @click="row.toggleDetails"
-            >{{ row.detailsShowing ? 'Hide' : 'Show' }} Details</b-button>
+              variant="info"
+              class="mr-1"
+            >{{ row.detailsShowing ? '隱藏' : '顯示' }}詳細</b-button>
+            <b-button
+              size="sm"
+              @click="deleteItem=row.item"
+              v-b-modal.check-delete-modal
+              variant="danger"
+            >刪除</b-button>
           </template>
-
           <template v-slot:row-details="row">
             <b-card>
               <ul class="text-left">
-                <!-- <li v-for="(value, key) in row.item" :key="key">{{ row.item['isActive'] }}</li> -->
                 <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
               </ul>
             </b-card>
           </template>
         </b-table>
-
         <!-- Info modal -->
-        <b-modal
-          :id="infoModal.id"
-          :title="infoModal.title"
-          ok-only
-          @hide="resetInfoModal"
-          centered
-        >
-          <pre>{{ infoModal.content }}</pre>
+        <b-modal :id="infoModal.id" title="編輯" hide-footer @hide="resetInfoModal" centered>
+          <b-form ref="form" @submit.stop.prevent="handleSubmit">
+            <b-form-group id="name-group" label="使用者名稱" label-for="name" description="修改使用者名稱">
+              <b-form-input id="name" v-model="newData.name" required />
+            </b-form-group>
+            <b-form-group id="eMail-group" label="信箱" label-for="eMail" description="修改信箱">
+              <b-form-input id="eMail" v-model="newData.eMail" required />
+            </b-form-group>
+            <b-form-group
+              id="charactorId-group"
+              label="Charactor"
+              label-for="charactorId"
+              description="Change Charactor"
+            >
+              <b-form-select
+                v-model="newData.charactorId"
+                :options="CharactorOptions"
+                class="mb-3"
+                value-field="charactorId"
+                text-field="name"
+                disabled-field="notEnabled"
+              ></b-form-select>
+            </b-form-group>
+            <b-form-group
+              id="lineId-group"
+              label="lineId"
+              label-for="lineId"
+              description="修改 lineId"
+            >
+              <b-form-input id="lineId" v-model="newData.lineId" />
+            </b-form-group>
+            <b-button type="submit" pill variant="success" class="float-right">送出</b-button>
+          </b-form>
         </b-modal>
         <!-- Info modal END-->
+        <!-- check delete modal-->
+        <b-modal id="check-delete-modal" hide-footer>
+          <b-alert show variant="warning" class="text-center">確定刪除？</b-alert>
+          <b-button class="float-right" @click="deleteAccount(false)">取消</b-button>
+          <b-button variant="danger" class="float-right mr-2" @click="deleteAccount(true)">確定</b-button>
+        </b-modal>
+        <!-- check delete modal END-->
       </b-card>
     </b-container>
   </div>
@@ -186,34 +242,24 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import Register from "@/components/Register.vue";
+import axios from "axios";
+import { async } from "q";
 
 export default {
   data() {
     return {
-      newata: {
+      newData: {
         name: "",
         account: "",
         password: "",
-        EMail: "",
-        CharactorId: "",
-        LineId: ""
+        eMail: "",
+        charactorId: "",
+        lineId: "",
+        userId: ""
       },
-      items: [
-        { isActive: true, password: 40, account: "Dickerson", name: "Macdon" },
-        { isActive: false, password: 21, account: "Larsen", name: "Shaw" },
-        { isActive: false, password: 9, account: "Mini", name: "Navarro" },
-        /*_rowVariant: "success"*/
-        { isActive: false, password: 89, account: "Gene", name: "Wils" },
-        { isActive: true, password: 38, account: "Jami", name: "Carney" },
-        { isActive: false, password: 27, account: "Essie", name: "Dunlap" },
-        { isActive: true, password: 40, account: "Thor", name: "Macd" },
-        { isActive: true, password: 87, account: "Larsen", name: "Shaw" },
-        /*_cellVariants: { password: "danger", isActive: "warning" }*/
-        { isActive: false, password: 26, account: "Mitzi", name: "Navarro" },
-        { isActive: false, password: 22, account: "Genevieve", name: "Wilson" },
-        { isActive: true, password: 38, account: "John", name: "Carney" },
-        { isActive: false, password: 29, account: "Dick", name: "Dunlap" }
-      ],
+      CharactorSelect: 1,
+      items: [],
       fields: [
         {
           key: "name",
@@ -232,25 +278,39 @@ export default {
           label: "使用者密碼",
           sortable: true,
           sortDirection: "desc",
-          class: "text-left"
+          class: "text-center"
         },
         {
-          key: "isActive",
-          label: "啟用狀態",
-          formatter: (value, key, item) => {
-            return value ? "Yes" : "No";
-          },
+          key: "charactorId",
+          label: "使用者權限",
+          sortable: true,
+          sortDirection: "desc",
+          class: "text-center",
+          formatter: (value /*, key, item*/) => {
+            return value
+              ? this.CharactorOptions[value].name
+              : this.CharactorOptions[0].name;
+          }
+        },
+        {
+          key: "eMail",
+          label: "信箱",
           sortable: true,
           sortByFormatted: true,
           filterByFormatted: true
         },
         { key: "actions", label: "操作" }
       ],
+      CharactorOptions: [
+        { charactorId: 0, name: "--請選則--", notEnabled: true },
+        { charactorId: 1, name: "系統管理員" },
+        { charactorId: 2, name: "一般使用者" }
+      ],
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
-      sortBy: "",
+      perPage: 10,
+      pageOptions: [10, 15, 20],
+      sortBy: "account",
       sortDesc: false,
       sortDirection: "asc",
       filter: null,
@@ -259,7 +319,8 @@ export default {
         id: "info-modal",
         title: "",
         content: ""
-      }
+      },
+      deleteItem: null
     };
   },
   computed: {
@@ -273,27 +334,143 @@ export default {
     }
   },
   components: {
-    NavBar
+    NavBar,
+    Register
   },
   mounted() {
     // Set the initial number of items
-    this.totalRows = this.items.length;
+    this.fetchData();
   },
   methods: {
     info(item, index, button) {
-      this.infoModal.title = item["name"].name;
-      // this.infoModal.title = `Row index: ${index}`;
+      this.infoModal.title = item.name;
+      this.newData.name = item.name;
+      this.newData.charactorId = item.charactorId ? item.charactorId : 0;
+      this.newData.eMail = item.eMail;
+      this.newData.lineId = item.lineId;
+      this.newData.account = item.account;
+      this.newData.password = item.password;
+      this.newData.userId = item.id;
       this.infoModal.content = JSON.stringify(item, null, 2);
-      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      this.$bvModal.show(this.infoModal.id);
     },
     resetInfoModal() {
       this.infoModal.title = "";
       this.infoModal.content = "";
+      this.newData = {
+        name: "",
+        account: "",
+        password: "",
+        eMail: "",
+        charactorId: "",
+        lineId: "",
+        userId: ""
+      };
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
+    },
+    async fetchData() {
+      const token = localStorage.getItem("token");
+      let res = await axios
+        .get("http://lspssapple.asuscomm.com:81/api/user", {
+          headers: {
+            "content-type": "application/json;charset=utf-8",
+            Authorization: `Bearer ${token}`
+          }
+        })
+        .then(async res => {
+          return await res;
+        })
+        .catch(async err => {
+          return await err.response;
+        });
+      if (res.status == 401) {
+        localStorage.removeItem("token", res.data.token);
+        localStorage.removeItem("userId", res.data.userId);
+        this.$router.push("/");
+      }
+      this.items = res.data;
+      this.totalRows = this.items.length;
+    },
+    async deleteAccount(isCanDelete) {
+      this.$bvModal.hide("check-delete-modal");
+      if (isCanDelete) {
+        const token = localStorage.getItem("token");
+        let res = await axios
+          .delete(
+            `http://lspssapple.asuscomm.com:81/api/user/${this.deleteItem.id}`,
+            {
+              headers: {
+                "content-type": "application/json;charset=utf-8",
+                Authorization: `Bearer ${token}`
+              }
+            }
+          )
+          .then(async res => {
+            this.fetchData();
+            this.deleteItem = null;
+            return await res;
+          })
+          .catch(async err => {
+            return await err.response;
+          });
+        if (res.status > 200 && res.status < 500) {
+          this.deleteItem = null;
+          this.fetchData();
+        }
+      }
+
+      // item.name = "tese";
+      // item.account = "tese";
+      // item.password = "tese";
+      // item.eMail = "tese";
+      // item.charactorId = 2;
+      // item.lineId = "";
+    },
+    async handleSubmit() {
+      const data = {
+        name: this.newData.name,
+        eMail: this.newData.eMail,
+        charactorId: this.newData.charactorId,
+        lineId: this.newData.lineId,
+        password: this.newData.password
+      };
+      const token = localStorage.getItem("token");
+      let res = await axios
+        .post(
+          `http://lspssapple.asuscomm.com:81/api/user/${this.newData.userId}`,
+          data,
+          {
+            headers: {
+              "content-type": "application/json;charset=utf-8",
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+        .then(async res => {
+          return await res;
+        })
+        .catch(async err => {
+          console.log(err);
+          return await err.response;
+        });
+      // console.log(this.newData)
+      if (res.status == 200) {
+        this.fetchData();
+        this.$bvModal.hide(this.infoModal.id);
+      } else {
+        localStorage.removeItem("token", res.data.token);
+        localStorage.removeItem("userId", res.data.userId);
+        this.$router.push("/");
+      }
+    },
+    createUser() {
+      this.fetchData();
+      this.$root.$emit("bv::toggle::collapse", "create-new-user-collapse");
     }
   }
 };
