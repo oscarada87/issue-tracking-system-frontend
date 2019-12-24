@@ -18,7 +18,7 @@
                 <th style="width: 10%" scope="col">標題</th>
                 <th style="width: 5%; min-width: 105px" scope="col">指派者</th>
                 <th style="width: 5%; min-width: 105px" scope="col">回報者</th>
-                <th style="width: 5%" scope="col">狀態</th>
+                <th style="width: 13%" scope="col">狀態</th>
                 <th style="width: 7%" scope="col">創立於</th>
                 <th style="width: 7%" scope="col">更新於</th>
                 <th style="width: 3%" scope="col">刪除</th>
@@ -167,6 +167,7 @@
                     { value: 4, text: '不急' }
                 ],
                 users:[],
+                statusPresent:{ 1: '未分配的問題', 2: '已分配未開始的問題', 3: '正在做的問題', 4: '完成後被重新打開的問題', 5: '已完成的問題', 6: '待定的問題'},
             };
         },
         computed: {
@@ -182,6 +183,7 @@
                 const api = 'http://lspssapple.asuscomm.com:81/api/issue';
                 const vm = this;
                 const token = localStorage.getItem('token');
+                const id = localStorage.getItem('userId');
                 this.$http.get(
                     api,
                     { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
@@ -189,7 +191,12 @@
                 then((response) => {
                     console.log(response)
                     if(response.status == 200){
-                        vm.issues = response.data;
+                        response.data.forEach(function(v, i, arr){
+                            if(v.reporterId == id || v.createUser == id || v.assigneeId == id){
+                                vm.issues.push(v);
+                                vm.issues[vm.issues.length - 1].statusId = vm.statusPresent[vm.issues[vm.issues.length - 1].statusId]
+                            }
+                        })
                     }
                 }); 
             },
