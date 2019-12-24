@@ -418,10 +418,6 @@ export default {
           .catch(async err => {
             return await err.response;
           });
-        if (res.status > 200 && res.status < 500) {
-          this.deleteItem = null;
-          this.fetchData();
-        }
       }
     },
     async handleSubmit() {
