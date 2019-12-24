@@ -3,8 +3,10 @@
     <NavBar />
     <b-container fluid class="mt-3">
       <b-row>
-      <b-col lg="4" class="my-1"><h1>專案管理</h1></b-col>
-      <b-col lg="8" class="my-1"></b-col>
+        <b-col lg="4" class="my-1">
+          <h1>專案管理</h1>
+        </b-col>
+        <b-col lg="8" class="my-1"></b-col>
       </b-row>
       <b-card>
         <!-- User Interface controls -->
@@ -91,9 +93,10 @@
               class="mb-0"
             >
               <b-form-checkbox-group v-model="filterOn" class="mt-1">
-                <b-form-checkbox value="name">使用者名稱</b-form-checkbox>
-                <b-form-checkbox value="account">使用者帳號</b-form-checkbox>
-                <b-form-checkbox value="eMail">信箱</b-form-checkbox>
+                <b-form-checkbox value="name">專案名稱</b-form-checkbox>
+                <b-form-checkbox value="id">專案序號</b-form-checkbox>
+                <b-form-checkbox value="manager">管理者</b-form-checkbox>
+                <b-form-checkbox value="developers">開發成員</b-form-checkbox>
               </b-form-checkbox-group>
             </b-form-group>
           </b-col>
@@ -142,9 +145,9 @@
           <b-col lg="6" class="my-2">
             <!-- <b-collapse id="create-new-user-collapse" class="mt-2">
               <b-card class="float-right">
-                <Register @registerSuccess="createUser" />
+                <Register @registerSuccess="createProject" />
               </b-card>
-            </b-collapse> -->
+            </b-collapse>-->
           </b-col>
         </b-row>
         <!-- Main table element -->
@@ -249,14 +252,21 @@ import { async } from "q";
 export default {
   data() {
     return {
+      fackData: {
+        name: "",
+        id: "",
+        userId: "",
+        manager: "",
+        developers: [],
+        general: []
+      },
       newData: {
         name: "",
-        account: "",
-        password: "",
-        eMail: "",
-        charactorId: "",
-        lineId: "",
-        userId: ""
+        id: "",
+        userId: "",
+        manager: "",
+        developers: [],
+        general: []
       },
       CharactorSelect: 1,
       items: [],
@@ -285,7 +295,7 @@ export default {
           label: "開發成員",
           sortable: true,
           sortDirection: "desc",
-          class: "text-center",
+          class: "text-center"
           // formatter: (value /*, key, item*/) => {
           //   return value
           //     ? this.CharactorOptions[value].name
@@ -310,7 +320,7 @@ export default {
       currentPage: 1,
       perPage: 10,
       pageOptions: [10, 15, 20],
-      sortBy: "account",
+      sortBy: "name",
       sortDesc: false,
       sortDirection: "asc",
       filter: null,
@@ -334,7 +344,7 @@ export default {
     }
   },
   components: {
-    NavBar,
+    NavBar
     // Register
   },
   mounted() {
@@ -346,11 +356,14 @@ export default {
       this.infoModal.title = item.name;
       this.newData.userId = item.id;
       this.newData.name = item.name;
-      this.newData.charactorId = item.charactorId ? item.charactorId : 0;
-      this.newData.eMail = item.eMail;
-      this.newData.lineId = item.lineId;
-      this.newData.account = item.account;
-      this.newData.password = item.password;
+      this.newData.manager = item.manager;
+      this.newData.developers = item.developers;
+      this.newData.general = item.general;
+      // this.newData.charactorId = item.charactorId ? item.charactorId : 0;
+      // this.newData.eMail = item.eMail;
+      // this.newData.lineId = item.lineId;
+      // this.newData.account = item.account;
+      // this.newData.password = item.password;
       this.infoModal.content = JSON.stringify(item, null, 2);
       // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
       this.$bvModal.show(this.infoModal.id);
@@ -360,12 +373,11 @@ export default {
       this.infoModal.content = "";
       this.newData = {
         name: "",
-        account: "",
-        password: "",
-        eMail: "",
-        charactorId: "",
-        lineId: "",
-        userId: ""
+        id: "",
+        userId: "",
+        manager: "",
+        developers: [],
+        general: []
       };
     },
     onFiltered(filteredItems) {
@@ -393,82 +405,75 @@ export default {
         localStorage.removeItem("userId", res.data.userId);
         this.$router.push("/");
       }
+      console.log(res.data);
       this.items = res.data;
       this.totalRows = this.items.length;
     },
     async deleteAccount(isCanDelete) {
-      this.$bvModal.hide("check-delete-modal");
-      if (isCanDelete) {
-        const token = localStorage.getItem("token");
-        let res = await axios
-          .delete(
-            `http://lspssapple.asuscomm.com:81/api/user/${this.deleteItem.id}`,
-            {
-              headers: {
-                "content-type": "application/json;charset=utf-8",
-                Authorization: `Bearer ${token}`
-              }
-            }
-          )
-          .then(async res => {
-            this.fetchData();
-            this.deleteItem = null;
-            return await res;
-          })
-          .catch(async err => {
-            return await err.response;
-          });
-        if (res.status > 200 && res.status < 500) {
-          this.deleteItem = null;
-          this.fetchData();
-        }
-      }
-
-      // item.name = "tese";
-      // item.account = "tese";
-      // item.password = "tese";
-      // item.eMail = "tese";
-      // item.charactorId = 2;
-      // item.lineId = "";
+      // this.$bvModal.hide("check-delete-modal");
+      // if (isCanDelete) {
+      //   const token = localStorage.getItem("token");
+      //   let res = await axios
+      //     .delete(
+      //       `http://lspssapple.asuscomm.com:81/api/user/${this.deleteItem.id}`,
+      //       {
+      //         headers: {
+      //           "content-type": "application/json;charset=utf-8",
+      //           Authorization: `Bearer ${token}`
+      //         }
+      //       }
+      //     )
+      //     .then(async res => {
+      //       this.fetchData();
+      //       this.deleteItem = null;
+      //       return await res;
+      //     })
+      //     .catch(async err => {
+      //       return await err.response;
+      //     });
+      //   if (res.status > 200 && res.status < 500) {
+      //     this.deleteItem = null;
+      //     this.fetchData();
+      //   }
+      // }
     },
     async handleSubmit() {
-      const data = {
-        name: this.newData.name,
-        eMail: this.newData.eMail,
-        charactorId: this.newData.charactorId,
-        lineId: this.newData.lineId,
-        password: this.newData.password
-      };
-      const token = localStorage.getItem("token");
-      let res = await axios
-        .post(
-          `http://lspssapple.asuscomm.com:81/api/user/${this.newData.userId}`,
-          data,
-          {
-            headers: {
-              "content-type": "application/json;charset=utf-8",
-              Authorization: `Bearer ${token}`
-            }
-          }
-        )
-        .then(async res => {
-          return await res;
-        })
-        .catch(async err => {
-          console.log(err);
-          return await err.response;
-        });
-
-      if (res.status == 200) {
-        this.fetchData();
-        this.$bvModal.hide(this.infoModal.id);
-      } else {
-        localStorage.removeItem("token", res.data.token);
-        localStorage.removeItem("userId", res.data.userId);
-        this.$router.push("/");
-      }
+      // const data = {
+      //   name: this.newData.name,
+      //   eMail: this.newData.eMail,
+      //   charactorId: this.newData.charactorId,
+      //   lineId: this.newData.lineId,
+      //   password: this.newData.password
+      // };
+      // const token = localStorage.getItem("token");
+      // let res = await axios
+      //   .post(
+      //     `http://lspssapple.asuscomm.com:81/api/user/${this.newData.userId}`,
+      //     data,
+      //     {
+      //       headers: {
+      //         "content-type": "application/json;charset=utf-8",
+      //         Authorization: `Bearer ${token}`
+      //       }
+      //     }
+      //   )
+      //   .then(async res => {
+      //     return await res;
+      //   })
+      //   .catch(async err => {
+      //     console.log(err);
+      //     return await err.response;
+      //   });
+      // if (res.status == 200) {
+      //   this.fetchData();
+      //   this.$bvModal.hide(this.infoModal.id);
+      // } else {
+      //   localStorage.removeItem("token", res.data.token);
+      //   localStorage.removeItem("userId", res.data.userId);
+      //   this.$router.push("/");
+      // }
     },
-    createUser() {
+    createProject() {
       this.fetchData();
       this.$root.$emit("bv::toggle::collapse", "create-new-user-collapse");
     }
