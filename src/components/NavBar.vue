@@ -73,11 +73,9 @@ export default {
           }
         })
         .then(res => {
-          console.log(res.data);
           return res;
         })
         .catch(err => {
-          console.log(err.response);
           return err.response;
         });
       if (res.data.charactorId == 1) this.isShow = true;
