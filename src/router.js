@@ -7,6 +7,7 @@ import Register from './components/Register.vue'
 import LoginRegisterDialog from './views/LoginRegisterDialog.vue'
 import IssueIndex from './views/IssueIndex.vue'
 import IssuePage from './views/IssuePage.vue'
+import AccountManagement from './views/AccountManagement.vue'
 
 Vue.use(Router)
 
@@ -32,7 +33,7 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: LoginRegisterDialog
     },
     {
       path: '/register',
@@ -40,9 +41,9 @@ export default new Router({
       component: Register
     }, 
     {
-      path: '/LoginRegisterDialog',
-      name: 'LoginRegisterDialog',
-      component: LoginRegisterDialog
+      path: '/accountmanagement',
+      name: 'AccountManagement',
+      component: AccountManagement
     },
     {
       path: '/issue',

@@ -25,8 +25,8 @@ router.beforeEach((to, from, next) => {
   if (isLogin) {
     next();
   } else {
-    if (to.path !== '/LoginRegisterDialog')
-      next('/LoginRegisterDialog');
+    if (to.path !== '/login')
+      next('/login');
     else
       next();
   }

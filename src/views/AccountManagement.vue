@@ -51,7 +51,7 @@
                 v-model="sortDirection"
                 id="initialSortSelect"
                 size="sm"
-                :options="['asc', 'desc', 'name']"
+                :options="['asc', 'desc', 'last']"
               ></b-form-select>
             </b-form-group>
           </b-col>
@@ -390,7 +390,7 @@ export default {
         });
       if (res.status == 401) {
         localStorage.removeItem("token", res.data.token);
-        localStorage.removeItem("userId", res.data.userId);
+        localStorage.removeItem("user_id", res.data.userId);
         this.$router.push("/");
       }
       this.items = res.data;
@@ -418,18 +418,7 @@ export default {
           .catch(async err => {
             return await err.response;
           });
-        if (res.status > 200 && res.status < 500) {
-          this.deleteItem = null;
-          this.fetchData();
-        }
       }
-
-      // item.name = "tese";
-      // item.account = "tese";
-      // item.password = "tese";
-      // item.eMail = "tese";
-      // item.charactorId = 2;
-      // item.lineId = "";
     },
     async handleSubmit() {
       const data = {
@@ -464,8 +453,8 @@ export default {
         this.$bvModal.hide(this.infoModal.id);
       } else {
         localStorage.removeItem("token", res.data.token);
-        localStorage.removeItem("userId", res.data.userId);
-        this.$router.push("/");
+        localStorage.removeItem("user_id", res.data.userId);
+        this.$router.go();
       }
     },
     createUser() {
