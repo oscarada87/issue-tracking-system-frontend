@@ -229,8 +229,8 @@
         <!-- check delete modal-->
         <b-modal id="check-delete-modal" hide-footer>
           <b-alert show variant="warning" class="text-center">確定刪除？</b-alert>
-          <b-button class="float-right" @click="deleteAccount(false)">取消</b-button>
-          <b-button variant="danger" class="float-right mr-2" @click="deleteAccount(true)">確定</b-button>
+          <b-button class="float-right" @click="deleteProject(false)">取消</b-button>
+          <b-button variant="danger" class="float-right mr-2" @click="deleteProject(true)">確定</b-button>
         </b-modal>
         <!-- check delete modal END-->
       </b-card>
@@ -428,37 +428,37 @@ export default {
         localStorage.removeItem("user_id", res.data.userId);
         this.$router.push("/");
       }
-      console.log(res.data);
       this.items = res.data;
       this.totalRows = this.items.length;
     },
-    async deleteAccount(isCanDelete) {
-      // this.$bvModal.hide("check-delete-modal");
-      // if (isCanDelete) {
-      //   const token = localStorage.getItem("token");
-      //   let res = await axios
-      //     .delete(
-      //       `http://lspssapple.asuscomm.com:81/api/user/${this.deleteItem.id}`,
-      //       {
-      //         headers: {
-      //           "content-type": "application/json;charset=utf-8",
-      //           Authorization: `Bearer ${token}`
-      //         }
-      //       }
-      //     )
-      //     .then(async res => {
-      //       this.fetchData();
-      //       this.deleteItem = null;
-      //       return await res;
-      //     })
-      //     .catch(async err => {
-      //       return await err.response;
-      //     });
-      //   if (res.status > 200 && res.status < 500) {
-      //     this.deleteItem = null;
-      //     this.fetchData();
-      //   }
-      // }
+    async deleteProject(isCanDelete) {
+      this.$bvModal.hide("check-delete-modal");
+      if (isCanDelete) {
+        console.log(this.deleteItem.id)
+        const token = localStorage.getItem("token");
+        let res = await axios
+          .delete(
+            `http://lspssapple.asuscomm.com:81/api/project/${this.deleteItem.id}`,
+            {
+              headers: {
+                "content-type": "application/json;charset=utf-8",
+                Authorization: `Bearer ${token}`
+              }
+            }
+          )
+          .then(async res => {
+            this.fetchData();
+            this.deleteItem = null;
+            return await res;
+          })
+          .catch(async err => {
+            return await err.response;
+          });
+        if (res.status > 200 && res.status < 500) {
+          this.deleteItem = null;
+          this.fetchData();
+        }
+      }
     },
     async handleSubmit() {
       // const data = {
