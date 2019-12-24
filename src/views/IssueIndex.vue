@@ -38,7 +38,7 @@
                         {{ item.summary }}
                     </td>
                     <td class="align-middle">
-                        {{ item.assignerId }}
+                        {{ item.assigneeId }}
                     </td>
                     <td class="align-middle">
                         {{ item.reporterId }}
@@ -73,14 +73,12 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="origin_price">指派人</label>
-                                <input type="text" class="form-control" id="origin_price" placeholder=""
-                                    v-model="tempIssue.assignerId">
+                                <label for="assigneeId">指派人</label>
+                                <b-form-select v-model="tempIssue.assigneeId" id="assigneeId" :options="users" size="sm" class="mt-3" required></b-form-select>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="price">回報人</label>
-                                <input type="text" class="form-control" id="price" placeholder=""
-                                    v-model="tempIssue.repoterId">
+                                <label for="reporterId">回報人</label>
+                                <b-form-select v-model="tempIssue.reporterId" id="reporterId" :options="users" size="sm" class="mt-3" required></b-form-select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -131,7 +129,7 @@
                 tempIssue: {
                     number: '',
                     summary: '',
-                    assignerId: '',
+                    assigneeId: '',
                     reporterId: '',
                     statusId: '',
                     description: '',
@@ -168,6 +166,7 @@
                     { value: 3, text: '普通' },
                     { value: 4, text: '不急' }
                 ],
+                users:[],
             };
         },
         computed: {
@@ -176,7 +175,7 @@
                 return _.filter(vm.issues, function (issue) {
                     return issue.summary.match(vm.searchText);
                 });
-            },
+            }
         },
         methods: {
             getIssueList() {
@@ -188,7 +187,7 @@
                     { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
                 ).
                 then((response) => {
-                    // console.log(response)
+                    console.log(response)
                     if(response.status == 200){
                         vm.issues = response.data;
                     }
@@ -229,11 +228,14 @@
                 const emptyIssue = {
                     number: '',
                     summary: '',
-                    assignerId: '',
+                    assigneeId: '',
                     reporterId: '',
                     statusId: '',
-                    createUser: '',
-                    description: ''
+                    description: '',
+                    kindId: '',
+                    serverityId: '',
+                    urgencyId: '',
+                    projectId: ''
                 };
                 this.tempIssue = emptyIssue;
             },
@@ -241,8 +243,9 @@
                 const api = 'http://lspssapple.asuscomm.com:81/api/issue';
                 const vm = this;
                 const token = localStorage.getItem('token');
-                vm.tempIssue.createUser = localStorage.getItem('user_id');
+                vm.tempIssue.createUser = parseInt(localStorage.getItem('user_id'));
                 vm.tempIssue.number = Math.floor(100000 + Math.random() * 900000)
+                // console.log(this.tempIssue)
                 this.$http.post(
                     api,
                     vm.tempIssue,
@@ -259,10 +262,35 @@
             checkIssue(issue){
                 const vm = this;
                 vm.$router.push({ path: `/issue/${issue.id}`})
+            },
+            getAllUser(){
+                const api = 'http://lspssapple.asuscomm.com:81/api/user';
+                const vm = this;
+                const token = localStorage.getItem('token');
+                this.$http.get(
+                    api,
+                    { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
+                ).
+                then((response) => {
+                    // console.log(response)
+                    if(response.status == 200){
+                        response.data.forEach(user => vm.users.push({ value: user.id, text: user.account }));
+                    }
+                }); 
+            },
+            handleUser(id) {
+                const vm = this;
+                this.users.forEach(function(v, i, arr){
+                    if(v.value == id){
+                        console.log(v.text)
+                        return v.text
+                    }
+                })
             }
         },
         created(){
             this.getIssueList();
+            this.getAllUser();
         }
     }
 </script>
