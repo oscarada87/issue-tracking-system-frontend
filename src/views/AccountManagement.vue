@@ -2,6 +2,10 @@
   <div>
     <NavBar />
     <b-container fluid class="mt-3">
+      <b-row>
+      <b-col lg="4" class="my-1"><h1>使用者管理</h1></b-col>
+      <b-col lg="8" class="my-1"></b-col>
+      </b-row>
       <b-card>
         <!-- User Interface controls -->
         <b-row class="mb-4">
