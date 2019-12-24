@@ -148,7 +148,7 @@
           striped
           small
           stacked="md"
-          :items="items"
+          :items="projects"
           :fields="fields"
           :current-page="currentPage"
           :per-page="perPage"
@@ -159,7 +159,13 @@
           :sort-direction="sortDirection"
           @filtered="onFiltered"
         >
-          <template v-slot:cell(name)="row">{{ row.value }}</template>
+          <!-- <template v-slot:cell(name)="row">{{ row.value }}</template> -->
+          <template v-slot:cell(developers)="row">
+            <b-button size="sm" @click="showDevelopers(row.item)" variant="info" class="mr-1">詳細成員</b-button>
+          </template>
+          <template v-slot:cell(generals)="row">
+            <b-button size="sm" @click="showGenerals(row.item)" variant="info" class="mr-1">詳細成員</b-button>
+          </template>
           <template v-slot:cell(actions)="row">
             <b-button
               size="sm"
@@ -190,52 +196,9 @@
             </b-card>
           </template>
         </b-table>
-        <!-- Info modal -->
-        <b-modal :id="infoModal.id" title="編輯" hide-footer @hide="resetInfoModal" centered>
-          <b-form ref="form" @submit.stop.prevent="handleSubmit">
-            <b-form-group id="name-group" label="使用者名稱" label-for="name" description="修改使用者名稱">
-              <b-form-input id="name" v-model="newData.name" required />
-            </b-form-group>
-            <b-form-group id="eMail-group" label="信箱" label-for="eMail" description="修改信箱">
-              <b-form-input id="eMail" v-model="newData.eMail" required />
-            </b-form-group>
-            <b-form-group
-              id="charactorId-group"
-              label="Charactor"
-              label-for="charactorId"
-              description="Change Charactor"
-            >
-              <b-form-select
-                v-model="newData.charactorId"
-                :options="CharactorOptions"
-                class="mb-3"
-                value-field="charactorId"
-                text-field="name"
-                disabled-field="notEnabled"
-              ></b-form-select>
-            </b-form-group>
-            <b-form-group
-              id="lineId-group"
-              label="lineId"
-              label-for="lineId"
-              description="修改 lineId"
-            >
-              <b-form-input id="lineId" v-model="newData.lineId" />
-            </b-form-group>
-            <b-button type="submit" pill variant="success" class="float-right">送出</b-button>
-          </b-form>
-        </b-modal>
-        <!-- Info modal END-->
-        <!-- check delete modal-->
-        <b-modal id="check-delete-modal" hide-footer>
-          <b-alert show variant="warning" class="text-center">確定刪除？</b-alert>
-          <b-button class="float-right" @click="deleteProject(false)">取消</b-button>
-          <b-button variant="danger" class="float-right mr-2" @click="deleteProject(true)">確定</b-button>
-        </b-modal>
-        <!-- check delete modal END-->
       </b-card>
     </b-container>
-    <!-- Add new Projecy -->
+    <!-- Add new Project -->
     <b-modal id="addProjectModal" title="新增專案" @ok="createProject">
       <div class="modal-body">
         <div class="row">
@@ -265,6 +228,63 @@
         </div>
       </div>
     </b-modal>
+    <!-- Info modal -->
+    <b-modal :id="infoModal.id" title="編輯" hide-footer @hide="resetInfoModal" centered>
+      <b-form ref="form" @submit.stop.prevent="handleSubmit">
+        <b-form-group id="project-name-group" label="專案名稱" label-for="project" description="專案名稱">
+          <b-form-input id="project" v-model="newData.name" required />
+        </b-form-group>
+        <b-form-group id="developer-group" label="開發成員" label-for="developer" description="編輯開發成員">
+          <b-form-input id="developer" v-model="newData.developers" required />
+        </b-form-group>
+        <!-- <b-form-group
+          id="charactorId-group"
+          label="Charactor"
+          label-for="charactorId"
+          description="Change Charactor"
+        >
+          <b-form-select
+            v-model="newData.charactorId"
+            :options="CharactorOptions"
+            class="mb-3"
+            value-field="charactorId"
+            text-field="name"
+            disabled-field="notEnabled"
+          ></b-form-select>
+        </b-form-group>-->
+        <!-- <b-form-group id="lineId-group" label="lineId" label-for="lineId" description="修改 lineId">
+          <b-form-input id="lineId" v-model="newData.lineId" />
+        </b-form-group>-->
+        <b-button type="submit" pill variant="success" class="float-right">送出</b-button>
+      </b-form>
+    </b-modal>
+    <!-- Info modal END-->
+    <!-- check delete modal-->
+    <b-modal id="check-delete-modal" hide-footer>
+      <b-alert show variant="warning" class="text-center">確定刪除？</b-alert>
+      <b-button class="float-right" @click="deleteProject(false)">取消</b-button>
+      <b-button variant="danger" class="float-right mr-2" @click="deleteProject(true)">確定</b-button>
+    </b-modal>
+    <!-- check delete modal END-->
+    <b-modal id="show-developers-Modal" title="詳細成員" @hide="resetInfoModal" centered ok-only>
+      <b-card>
+        <b-list-group>
+          <b-list-group-item
+            button
+            v-for="(developer,key) in developers"
+            :key="key"
+          >{{developer.name}}</b-list-group-item>
+        </b-list-group>
+      </b-card>
+    </b-modal>
+    <b-modal id="show-generals-Modal" title="詳細成員" @hide="resetInfoModal" centered ok-only>
+      <b-card>
+        <b-list-group>
+          <b-list-group-item button v-for="generals in generals" :key="generals">{{generals.name}}</b-list-group-item>
+        </b-list-group>
+      </b-card>
+    </b-modal>
+    <b-button @click="testeverything">testbutton</b-button>
   </div>
 </template>
 
@@ -277,18 +297,10 @@ import { async } from "q";
 export default {
   data() {
     return {
-      fackData: {
-        name: "",
-        id: "",
-        userId: "",
-        manager: "",
-        developers: [],
-        general: []
-      },
       tempProject: {
         name: "",
         description: "",
-        createUser: ""
+        managerId: ""
       },
       newData: {
         name: "",
@@ -296,9 +308,13 @@ export default {
         userId: "",
         manager: "",
         developers: [],
-        general: []
+        generals: []
       },
-      items: [],
+      developers: [],
+      generals: [],
+      users: [],
+      issues: [],
+      projects: [],
       fields: [
         {
           key: "name",
@@ -317,33 +333,20 @@ export default {
           label: "管理者",
           sortable: true,
           sortDirection: "desc",
-          class: "text-center"
+          class: "text-center",
+          formatter: (value /*, key, item*/) => {
+            return value ? value["name"] : "";
+          }
         },
         {
           key: "developers",
-          label: "開發成員",
-          sortable: true,
-          sortDirection: "desc",
-          class: "text-center"
-          // formatter: (value /*, key, item*/) => {
-          //   return value
-          //     ? this.CharactorOptions[value].name
-          //     : this.CharactorOptions[0].name;
-          // }
+          label: "開發成員"
         },
         {
-          key: "general",
-          label: "一般使用者",
-          sortable: true,
-          sortByFormatted: true,
-          filterByFormatted: true
+          key: "generals",
+          label: "一般使用者"
         },
         { key: "actions", label: "操作" }
-      ],
-      CharactorOptions: [
-        { charactorId: 0, name: "--請選則--", notEnabled: true },
-        { charactorId: 1, name: "系統管理員" },
-        { charactorId: 2, name: "一般使用者" }
       ],
       totalRows: 1,
       currentPage: 1,
@@ -376,8 +379,10 @@ export default {
     NavBar
   },
   mounted() {
-    // Set the initial number of items
+    // Set the initial number of projects
     this.fetchData();
+    this.getAllUser();
+    this.getAllIssue();
   },
   methods: {
     info(item, index, button) {
@@ -386,7 +391,7 @@ export default {
       this.newData.name = item.name;
       this.newData.manager = item.manager;
       this.newData.developers = item.developers;
-      this.newData.general = item.general;
+      this.newData.generals = item.generals;
       this.infoModal.content = JSON.stringify(item, null, 2);
       // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
       this.$bvModal.show(this.infoModal.id);
@@ -400,7 +405,7 @@ export default {
         userId: "",
         manager: "",
         developers: [],
-        general: []
+        generalss: []
       };
     },
     onFiltered(filteredItems) {
@@ -428,13 +433,12 @@ export default {
         localStorage.removeItem("user_id", res.data.userId);
         this.$router.push("/");
       }
-      this.items = res.data;
-      this.totalRows = this.items.length;
+      this.projects = res.data;
+      this.totalRows = this.projects.length;
     },
     async deleteProject(isCanDelete) {
       this.$bvModal.hide("check-delete-modal");
       if (isCanDelete) {
-        console.log(this.deleteItem.id)
         const token = localStorage.getItem("token");
         let res = await axios
           .delete(
@@ -454,10 +458,6 @@ export default {
           .catch(async err => {
             return await err.response;
           });
-        if (res.status > 200 && res.status < 500) {
-          this.deleteItem = null;
-          this.fetchData();
-        }
       }
     },
     async handleSubmit() {
@@ -500,8 +500,7 @@ export default {
       const api = "http://lspssapple.asuscomm.com:81/api/project";
       const vm = this;
       const token = localStorage.getItem("token");
-      vm.tempProject.createUser = parseInt(localStorage.getItem("user_id"));
-      // console.log(this.tempIssue)
+      vm.tempProject.managerId = parseInt(localStorage.getItem("user_id"));
       axios
         .post(api, vm.tempProject, {
           headers: {
@@ -512,7 +511,7 @@ export default {
         .then(response => {
           console.log(response);
           if (response.status == 200) {
-            alert("新增問題成功!");
+            alert("成功新增專案!");
             this.$router.go();
           }
         })
@@ -522,6 +521,67 @@ export default {
     },
     openAddModal() {
       this.$bvModal.show("addProjectModal");
+    },
+    showDevelopers(item) {
+      this.infoModal.title = "詳細成員";
+      this.developers = item.developers;
+      this.$bvModal.show("show-developers-Modal");
+    },
+    showGenerals(item) {
+      this.infoModal.title = "詳細成員";
+      this.generals = item.generals;
+      this.$bvModal.show("show-generals-Modal");
+    },
+    getAllUser() {
+      const api = "http://lspssapple.asuscomm.com:81/api/user";
+      const vm = this;
+      const token = localStorage.getItem("token");
+      axios
+        .get(api, {
+          headers: {
+            Authorization: "Bearer " + token,
+            "content-type": "application/json;charset=utf-8"
+          }
+        })
+        .then(response => {
+          // console.log(response)
+          if (response.status == 200) {
+            response.data.forEach(user =>
+              vm.users.push({
+                id: user.id,
+                nmae: user.name,
+                charactorId: user.charactorId
+              })
+            );
+          }
+        });
+    },
+    getAllIssue() {
+      const api = "http://lspssapple.asuscomm.com:81/api/issue";
+      const vm = this;
+      const token = localStorage.getItem("token");
+      axios
+        .get(api, {
+          headers: {
+            Authorization: "Bearer " + token,
+            "content-type": "application/json;charset=utf-8"
+          }
+        })
+        .then(response => {
+          if (response.status == 200) {
+            response.data.forEach(issue =>
+              vm.issues.push({
+                id: issue.id,
+                number: issue.number,
+                createUserId: issue.createUser
+              })
+            );
+          }
+        });
+    },
+    testeverything() {
+      this.getAllIssue();
+      console.log(this.issues);
     }
   }
 };
