@@ -16,11 +16,11 @@
                 <th style="width: 3%" scope="col">查看</th>
                 <th style="width: 10%" scope="col">代號</th>
                 <th style="width: 10%" scope="col">標題</th>
-                <th style="width: 5%; min-width: 105px" scope="col">指派者</th>
-                <th style="width: 5%; min-width: 105px" scope="col">回報者</th>
+                <th style="width: 5%; min-width: 105px" scope="col">指派者ID</th>
+                <th style="width: 5%; min-width: 105px" scope="col">回報者ID</th>
                 <th style="width: 13%" scope="col">狀態</th>
                 <th style="width: 7%" scope="col">創立於</th>
-                <th style="width: 7%" scope="col">更新於</th>
+                <th style="width: 7%" scope="col">創立者ID</th>
                 <th style="width: 3%" scope="col">刪除</th>
             </thead>
             <tbody>
@@ -50,7 +50,7 @@
                         {{ item.createTime }}
                     </td>
                     <td class="align-middle">
-                        {{ item.modifyTime }}
+                        {{ item.createUser }}
                     </td>
                     <td class="align-middle">
                         <button type="button" class="btn btn-outline-danger btn-sm" @click.prevent="tempIssue = item; openDeleteModal(item)">
