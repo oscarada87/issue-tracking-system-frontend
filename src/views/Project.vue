@@ -138,21 +138,14 @@
               pill
               variant="outline-danger"
               size="lg"
-              v-b-toggle.create-new-user-collapse
+              @click="openAddModal"
             >新增專案</b-button>
-          </b-col>
-          <b-col lg="6" class="my-1"></b-col>
-          <b-col lg="6" class="my-2">
-            <!-- <b-collapse id="create-new-user-collapse" class="mt-2">
-              <b-card class="float-right">
-                <Register @registerSuccess="createProject" />
-              </b-card>
-            </b-collapse>-->
           </b-col>
         </b-row>
         <!-- Main table element -->
         <b-table
           show-empty
+          striped
           small
           stacked="md"
           :items="items"
@@ -185,7 +178,9 @@
               @click="deleteItem=row.item"
               v-b-modal.check-delete-modal
               variant="danger"
-            >刪除</b-button>
+            >
+              <font-awesome-icon icon="trash-alt" />
+            </b-button>
           </template>
           <template v-slot:row-details="row">
             <b-card>
@@ -240,6 +235,36 @@
         <!-- check delete modal END-->
       </b-card>
     </b-container>
+    <!-- Add new Projecy -->
+    <b-modal id="addProjectModal" title="新增專案" @ok="createProject">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm">
+            <div class="form-group">
+              <label for="title">問題名稱</label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                placeholder
+                required
+                v-model="tempProject.name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="description">專案描述</label>
+              <textarea
+                type="text"
+                class="form-control"
+                id="description"
+                placeholder
+                v-model="tempProject.description"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -260,6 +285,11 @@ export default {
         developers: [],
         general: []
       },
+      tempProject: {
+        name: "",
+        description: "",
+        createUser: ""
+      },
       newData: {
         name: "",
         id: "",
@@ -268,7 +298,6 @@ export default {
         developers: [],
         general: []
       },
-      CharactorSelect: 1,
       items: [],
       fields: [
         {
@@ -345,7 +374,6 @@ export default {
   },
   components: {
     NavBar
-    // Register
   },
   mounted() {
     // Set the initial number of items
@@ -359,11 +387,6 @@ export default {
       this.newData.manager = item.manager;
       this.newData.developers = item.developers;
       this.newData.general = item.general;
-      // this.newData.charactorId = item.charactorId ? item.charactorId : 0;
-      // this.newData.eMail = item.eMail;
-      // this.newData.lineId = item.lineId;
-      // this.newData.account = item.account;
-      // this.newData.password = item.password;
       this.infoModal.content = JSON.stringify(item, null, 2);
       // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
       this.$bvModal.show(this.infoModal.id);
@@ -402,7 +425,7 @@ export default {
         });
       if (res.status == 401) {
         localStorage.removeItem("token", res.data.token);
-        localStorage.removeItem("userId", res.data.userId);
+        localStorage.removeItem("user_id", res.data.userId);
         this.$router.push("/");
       }
       console.log(res.data);
@@ -469,13 +492,36 @@ export default {
       //   this.$bvModal.hide(this.infoModal.id);
       // } else {
       //   localStorage.removeItem("token", res.data.token);
-      //   localStorage.removeItem("userId", res.data.userId);
+      //   localStorage.removeItem("user_id", res.data.userId);
       //   this.$router.push("/");
       // }
     },
     createProject() {
-      this.fetchData();
-      this.$root.$emit("bv::toggle::collapse", "create-new-user-collapse");
+      const api = "http://lspssapple.asuscomm.com:81/api/project";
+      const vm = this;
+      const token = localStorage.getItem("token");
+      vm.tempProject.createUser = parseInt(localStorage.getItem("user_id"));
+      // console.log(this.tempIssue)
+      axios
+        .post(api, vm.tempProject, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "content-type": "application/json;charset=utf-8"
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status == 200) {
+            alert("新增問題成功!");
+            this.$router.go();
+          }
+        })
+        .catch(err => {
+          console.log(err.response);
+        });
+    },
+    openAddModal() {
+      this.$bvModal.show("addProjectModal");
     }
   }
 };
