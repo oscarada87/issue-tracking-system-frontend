@@ -51,7 +51,7 @@
                 v-model="sortDirection"
                 id="initialSortSelect"
                 size="sm"
-                :options="['asc', 'desc', 'name']"
+                :options="['asc', 'desc', 'last']"
               ></b-form-select>
             </b-form-group>
           </b-col>
