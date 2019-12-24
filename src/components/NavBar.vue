@@ -13,11 +13,13 @@
             <b-dropdown-item href="#">456</b-dropdown-item>
             <b-dropdown-item href="#">789</b-dropdown-item>
           </b-nav-item-dropdown>
-          <b-nav-item-dropdown text="Project" left>
+          <!-- <b-nav-item-dropdown text="Project" left>
             <b-dropdown-item @click="$bvModal.show('modal-scoped')">create</b-dropdown-item>
             <b-dropdown-item @click="goMyProject">my project</b-dropdown-item>
-          </b-nav-item-dropdown>
+          </b-nav-item-dropdown>-->
+          <b-nav-item href="#/project">Project</b-nav-item>
           <b-nav-item href="#/issue">Issue</b-nav-item>
+          <b-nav-item v-if="isShow" href="#/accountmanagement">AccountManagement</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -44,21 +46,46 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "NavBar",
-  Data() {
-    return {};
+  data() {
+    return {
+      isShow: false
+    };
   },
   methods: {
-    createProject() {},
-    goMyProject() {
-      this.$router.push("/project");
-    },
     logout() {
       localStorage.removeItem("token");
-      localStorage.removeItem("userId");
+      localStorage.removeItem("user_id");
       this.$router.push("/login");
+    },
+    async CheckIdentity() {
+      const user_id = localStorage.getItem("user_id");
+      const token = localStorage.getItem("token");
+      const api = `http://lspssapple.asuscomm.com:81/api/user/${user_id}`;
+      const vm = this;
+      let res = await axios
+        .get(api, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "content-type": "application/json;charset=utf-8"
+          }
+        })
+        .then(res => {
+          console.log(res.data);
+          return res;
+        })
+        .catch(err => {
+          console.log(err.response);
+          return err.response;
+        });
+      if (res.data.charactorId == 1) this.isShow = true;
+      else this.isShow = false;
     }
+  },
+  mounted() {
+    this.CheckIdentity();
   }
 };
 </script>
