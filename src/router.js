@@ -8,6 +8,7 @@ import LoginRegisterDialog from './views/LoginRegisterDialog.vue'
 import IssueIndex from './views/IssueIndex.vue'
 import IssuePage from './views/IssuePage.vue'
 import AccountManagement from './views/AccountManagement.vue'
+import Profile from './views/Profile.vue'
 
 Vue.use(Router)
 
@@ -54,6 +55,11 @@ export default new Router({
       path: '/issue/:id',
       name: 'IssuePage',
       component: IssuePage
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
     }
   ]
 })
