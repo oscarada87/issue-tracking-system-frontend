@@ -1,10 +1,12 @@
 <template>
   <div>
     <NavBar />
-    <b-container fluid class="mt-3">
+    <b-container fluid class="my-3">
       <b-row>
-      <b-col lg="4" class="my-1"><h1>使用者管理</h1></b-col>
-      <b-col lg="8" class="my-1"></b-col>
+        <b-col lg="4" class="my-1">
+          <h1>使用者管理</h1>
+        </b-col>
+        <b-col lg="8" class="my-1"></b-col>
       </b-row>
       <b-card>
         <!-- User Interface controls -->
@@ -135,17 +137,17 @@
               pill
               variant="outline-danger"
               size="lg"
-              v-b-toggle.create-new-user-collapse
+              @click="openAddModal"
             >新增使用者</b-button>
           </b-col>
-          <b-col lg="6" class="my-1"></b-col>
+          <!-- <b-col lg="6" class="my-1"></b-col>
           <b-col lg="6" class="my-2">
             <b-collapse id="create-new-user-collapse" class="mt-2">
               <b-card class="float-right">
                 <Register @registerSuccess="createUser" />
               </b-card>
             </b-collapse>
-          </b-col>
+          </b-col>-->
         </b-row>
         <!-- Main table element -->
         <b-table
@@ -235,6 +237,9 @@
           <b-button variant="danger" class="float-right mr-2" @click="deleteAccount(true)">確定</b-button>
         </b-modal>
         <!-- check delete modal END-->
+        <b-modal id="addAccountModal" title="新增專案" hide-footer>
+          <Register @registerSuccess="createUser" />
+        </b-modal>
       </b-card>
     </b-container>
   </div>
@@ -413,9 +418,16 @@ export default {
           .then(async res => {
             this.fetchData();
             this.deleteItem = null;
+            this.makeToast("success", "刪除成功！", "成功");
             return await res;
           })
           .catch(async err => {
+            this.makeToast(
+              "danger",
+              "刪除失敗...",
+              "失敗",
+              "b-toaster-bottom-full"
+            );
             return await err.response;
           });
       }
@@ -457,9 +469,26 @@ export default {
         this.$router.go();
       }
     },
+    openAddModal() {
+      this.$bvModal.show("addAccountModal");
+    },
     createUser() {
       this.fetchData();
-      this.$root.$emit("bv::toggle::collapse", "create-new-user-collapse");
+      this.$bvModal.hide("addAccountModal");
+      this.makeToast("success", "成功建立帳號");
+    },
+    makeToast(
+      variant = null,
+      message = "",
+      title = "",
+      toaster = "b-toaster-top-right"
+    ) {
+      this.$bvToast.toast(message, {
+        title: title,
+        toaster: toaster,
+        variant: variant,
+        solid: true
+      });
     }
   }
 };

@@ -20,7 +20,7 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-item >{{userName}}</b-nav-item>
+          <b-nav-item id="user-name">{{userName}}</b-nav-item>
           <b-button variant="transparent">
             <font-awesome-icon icon="info-circle" size="lg" />
           </b-button>

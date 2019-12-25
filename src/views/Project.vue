@@ -621,7 +621,22 @@ export default {
           }
         });
     },
-    testeverything() {}
+    makeToast(
+      variant = null,
+      message = "",
+      title = "",
+      toaster = "b-toaster-top-right"
+    ) {
+      this.$bvToast.toast(message, {
+        title: title,
+        toaster: toaster,
+        variant: variant,
+        solid: true
+      });
+    },
+    testeverything() {
+      console.log(this.issues);
+    }
   }
 };
 </script>
