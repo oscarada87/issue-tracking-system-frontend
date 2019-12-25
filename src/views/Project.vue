@@ -165,6 +165,9 @@
           <template v-slot:cell(generals)="row">
             <b-button size="sm" @click="showGenerals(row.item)" variant="info" class="mr-1">詳細成員</b-button>
           </template>
+          <template v-slot:cell(issues)="row">
+            <b-button size="sm" @click="showIssues(row.item)" variant="info" class="mr-1">Issues</b-button>
+          </template>
           <template v-slot:cell(actions)="row">
             <b-button
               size="sm"
@@ -189,9 +192,14 @@
           </template>
           <template v-slot:row-details="row">
             <b-card>
-              <ul class="text-left">
-                <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-              </ul>
+              <b-list-group>
+                <b-list-group-item
+                  class="text-left"
+                  button
+                  v-for="(value, key) in row.item"
+                  :key="key"
+                >{{ key }}: {{ value }}</b-list-group-item>
+              </b-list-group>
             </b-card>
           </template>
         </b-table>
@@ -301,7 +309,14 @@
         </b-list-group>
       </b-card>
     </b-modal>
-    <!-- <b-button @click="testeverything">testbutton</b-button> -->
+    <b-modal id="show-issues-Modal" title="此專案下的 Issue" @hide="resetInfoModal" centered ok-only>
+      <b-card>
+        <b-list-group>
+          <b-list-group-item button v-for="(issue, key) in issuesOfProject" :key="key">{{issue}}</b-list-group-item>
+        </b-list-group>
+      </b-card>
+    </b-modal>
+    <b-button @click="testeverything">testbutton</b-button>
   </div>
 </template>
 
@@ -334,6 +349,7 @@ export default {
       generalsOptions: [],
       users: [],
       issues: [],
+      issuesOfProject: [],
       projects: [],
       fields: [
         {
@@ -358,14 +374,9 @@ export default {
             return value ? value["name"] : "";
           }
         },
-        {
-          key: "developers",
-          label: "開發成員"
-        },
-        {
-          key: "generals",
-          label: "一般使用者"
-        },
+        { key: "developers", label: "開發成員" },
+        { key: "generals", label: "一般使用者" },
+        { key: "issues", label: "Issues" },
         { key: "actions", label: "操作" }
       ],
       totalRows: 1,
@@ -532,6 +543,7 @@ export default {
       if (res.status == 200) {
         this.fetchData();
         this.$bvModal.hide(this.infoModal.id);
+        this.makeToast("success", "編輯成功！", "成功");
       } else {
         localStorage.removeItem("token", res.data.token);
         localStorage.removeItem("user_id", res.data.userId);
@@ -551,14 +563,13 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
           if (response.status == 200) {
-            alert("成功新增專案!");
-            this.$router.go();
+            vm.tempProject = { name: "", description: "", managerId: "" };
+            this.makeToast("success", "成功", "成功新增專案!");
           }
         })
         .catch(err => {
-          console.log(err.response);
+          this.makeToast("danger", "失敗", "專案新增失敗!");
         });
     },
     openAddModal() {
@@ -574,6 +585,16 @@ export default {
       this.generals = item.generals;
       this.$bvModal.show("show-generals-Modal");
     },
+    showIssues(item) {
+      this.infoModal.title = "此專案下的 Issue";
+      this.issuesOfProject = [];
+      const vm = this;
+      this.issues.forEach(function(issue) {
+        if (issue.id == item.id)
+          vm.issuesOfProject.push(`Numbe${issue.number}-${issue.summary}`);
+      });
+      this.$bvModal.show("show-issues-Modal");
+    },
     getAllUser() {
       const api = "http://lspssapple.asuscomm.com:81/api/user";
       const vm = this;
@@ -586,7 +607,6 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response)
           if (response.status == 200) {
             response.data.forEach(user =>
               vm.users.push({
@@ -611,13 +631,14 @@ export default {
         })
         .then(response => {
           if (response.status == 200) {
-            response.data.forEach(issue =>
+            response.data.forEach(issue => {
               vm.issues.push({
-                id: issue.id,
+                id: issue.projectId,
                 number: issue.number,
+                summary: issue.summary,
                 createUserId: issue.createUser
-              })
-            );
+              });
+            });
           }
         });
     },
