@@ -13,10 +13,15 @@
                             <b-form-input id="input-number" v-model="issue.number" type="string" required>
                             </b-form-input>
                         </b-col>
-                        <b-col cols="6">
+                        <b-col cols="3">
                             <label for="input-summary">問題標題</label>
                             <b-form-input id="input-summary" v-model="issue.summary" type="string" required>
                             </b-form-input>
+                        </b-col>
+                        <b-col cols="3">
+                            <label for="input-summary">隸屬專案</label>
+                            <b-form-select v-model="issue.projectId" :options="projectOptions" class="mb-3" value-field="id" text-field="name" disabled-field="notEnabled">
+                            </b-form-select>
                         </b-col>
                         <b-col cols="3">
                             <label for="input-IssueCreateUser">創立者</label>
@@ -125,7 +130,8 @@
                     createTime: '',
                     createUser: '',
                     modifyTime: '',
-                    ModifyUser: ''
+                    ModifyUser: '',
+                    projectId: ''
                 },
                 statusOptions:[
                     { value: 1, text: '未分配的問題' },
@@ -154,7 +160,8 @@
                     { value: 3, text: '普通' },
                     { value: 4, text: '不急' }
                 ],
-                users: []
+                users: [],
+                projectOptions: []
             };
         },
         methods: {
@@ -170,6 +177,21 @@
                     console.log(response)
                     if(response.status == 200){
                         vm.issue = response.data;
+                    }
+                }); 
+            },
+            getAllProject(){
+                const api = 'http://lspssapple.asuscomm.com:81/api/project';
+                const vm = this;
+                const token = localStorage.getItem('token');
+                this.$http.get(
+                    api,
+                    { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
+                ).
+                then((response) => {
+                    // console.log(response)
+                    if(response.status == 200){
+                        response.data.forEach(project => vm.projectOptions.push({ id: project.id, name: project.name }));
                     }
                 }); 
             },
@@ -209,6 +231,7 @@
         created() {
             this.getIssue();
             this.getAllUser();
+            this.getAllProject()
         }
     }
 </script>

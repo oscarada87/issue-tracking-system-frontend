@@ -316,7 +316,7 @@
         </b-list-group>
       </b-card>
     </b-modal>
-    <b-button @click="testeverything">testbutton</b-button>
+    <!-- <b-button @click="testeverything">testbutton</b-button> -->
   </div>
 </template>
 
