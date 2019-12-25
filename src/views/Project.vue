@@ -227,7 +227,6 @@
         </div>
       </div>
     </b-modal>
-    <!-- -------------------------------------------------------------------------------------------------- -->
     <!-- Info modal -->
     <b-modal :id="infoModal.id" title="編輯" hide-footer @hide="resetInfoModal" centered>
       <b-form ref="form" @submit.stop.prevent="handleSubmit">
@@ -276,7 +275,6 @@
         </b-container>
       </b-form>
     </b-modal>
-    <!-- -------------------------------------------------------------------------------------------------- -->
     <!-- Info modal END-->
     <!-- check delete modal-->
     <b-modal id="check-delete-modal" hide-footer>
