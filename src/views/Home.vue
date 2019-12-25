@@ -2,9 +2,9 @@
   <div class="home">
     <NavBar />
     <div>
-      <!-- {{getkindTable}}
+      {{getkindTable}}
       {{getserverityTable}}
-      {{getuserTable}} -->
+      {{getuserTable}}
     </div>
     <b-container fluid class="mt-3 bv-example-row bv-example-row-flex-cols">
       <b-row>
@@ -18,12 +18,12 @@
         <b-col></b-col>
         <b-col cols="5">
           <b-alert show variant="info">我負責的Issue</b-alert>
-          <b-table sticky-header head-variant="light" hover outlined="false" :items="IssueItems" :fields="IssueFields"></b-table>
+          <b-table sticky-header head-variant="light" hover :items="IssueItems" :fields="IssueFields"></b-table>
         </b-col>
         <b-col></b-col>
         <b-col cols="5">
           <b-alert show variant="info">Issue類別</b-alert>
-          <b-table head-variant="light" hover outlined="false" :items="KindItems" :fields="KindFields"></b-table>
+          <b-table head-variant="light" hover :items="KindItems[1]" :fields="KindFields"></b-table>
         </b-col>
         <b-col></b-col>
       </b-row>
@@ -32,12 +32,12 @@
         <b-col></b-col>
         <b-col cols="5">
           <b-alert show variant="info">重要性與緊急性</b-alert>
-          <b-table head-variant="light" hover outlined="false" :items="ServerityItems" :fields="ServerityFields"></b-table>
+          <b-table head-variant="light" hover :items="ServerityItems[1]" :fields="ServerityFields"></b-table>
         </b-col>
         <b-col></b-col>
         <b-col cols="5">
           <b-alert show variant="info">其餘人員負責</b-alert>
-          <b-table sticky-header head-variant="light" hover outlined="false" :items="UserItems" :fields="UserFields"></b-table>
+          <b-table sticky-header head-variant="light" hover :items="UserItems[1]" :fields="UserFields"></b-table>
         </b-col>
         <b-col></b-col>
       </b-row>
@@ -113,11 +113,11 @@
           this.kindPercentage[2]=(((this.kindQuantity[2]/total) * 100).toFixed(1) + '%');
           this.kindPercentage[3]=(((this.kindQuantity[3]/total) * 100).toFixed(1) + '%');
           this.kindPercentage[4]=(((this.kindQuantity[4]/total) * 100).toFixed(1) + '%');
-          this.KindItems.push(
+          this.KindItems.push([
             { kind: "疑難排解", quantity: this.kindQuantity[1], percentage: this.kindPercentage[1]},
             { kind: "功能開發", quantity: this.kindQuantity[2], percentage: this.kindPercentage[2]},
             { kind: "平面設計", quantity: this.kindQuantity[3], percentage: this.kindPercentage[3]},
-            { kind: "其他", quantity: this.kindQuantity[4], percentage: this.kindPercentage[4]});
+            { kind: "其他", quantity: this.kindQuantity[4], percentage: this.kindPercentage[4]}]);
           return ""
         },
         getserverityTable: function () {
@@ -148,13 +148,13 @@
               else if(element.serverity==4){this.notUrgentQuantity[4]+=1;this.totalQuantity[4]+=1}
               else if(element.serverity==5){this.notUrgentQuantity[5]+=1;this.totalQuantity[5]+=1}}
           });
-          this.ServerityItems.push(
+          this.ServerityItems.push([
             { urgency: "緊急", unknown: this.urgentQuantity[1], trivial: this.urgentQuantity[2], minor: this.urgentQuantity[3], critical: this.urgentQuantity[4], major: this.urgentQuantity[5] },
             { urgency: "盡速", unknown: this.asFastAsPossibleQuantity[1], trivial: this.asFastAsPossibleQuantity[1], minor: this.asFastAsPossibleQuantity[4], critical: this.asFastAsPossibleQuantity[4], major: this.asFastAsPossibleQuantity[5] },
             { urgency: "普通", unknown: this.normalQuantity[1], trivial: this.normalQuantity[2], minor: this.normalQuantity[3], critical: this.normalQuantity[4], major: this.normalQuantity[5] },
             { urgency: "不急", unknown: this.notUrgentQuantity[1], trivial: this.notUrgentQuantity[1], minor: this.notUrgentQuantity[3], critical: this.notUrgentQuantity[3], major: this.notUrgentQuantity[5] },
             { urgency: "Total", unknown: this.totalQuantity[1], trivial: this.totalQuantity[2], minor: this.totalQuantity[3], critical: this.totalQuantity[4], major: this.totalQuantity[5] }
-          );
+          ]);
           return ""
         },
         getuserTable: function () {
@@ -162,6 +162,7 @@
           let userissue = [0,0,0,0,0,0,0]
           let info = {}
           let infoclone = {}
+          let temp = []
           this.users.forEach(user => {
             this.issues.forEach(issue => {
               if(issue.assignee == user.value){
@@ -175,12 +176,12 @@
             })
             info = {assignee: user.text, backlog: userissue[1], open: userissue[2], inProgess: userissue[3], reopened: userissue[4], resolved: userissue[5], pending: userissue[6] }
             infoclone = Object.assign({}, info)
-            this.UserItems.push(infoclone)
+            temp.push(infoclone)
             info = {}
             userissue = userissue = [0,0,0,0,0,0,0]
           })
+          this.UserItems.push(temp)
         }
-
     },
     methods: {
         getIssueList() {
