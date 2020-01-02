@@ -179,7 +179,7 @@
                 const api = 'http://lspssapple.asuscomm.com:81/api/issue';
                 const vm = this;
                 const token = localStorage.getItem('token');
-                const id = localStorage.getItem('userId');
+                const id = localStorage.getItem('user_id');
                 this.$http.get(
                     api,
                     { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
