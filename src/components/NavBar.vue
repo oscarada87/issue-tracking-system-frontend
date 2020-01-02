@@ -8,11 +8,6 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="mr-auto">
-          <b-nav-item-dropdown text="Dashboard" left>
-            <b-dropdown-item href="#">123</b-dropdown-item>
-            <b-dropdown-item href="#">456</b-dropdown-item>
-            <b-dropdown-item href="#">789</b-dropdown-item>
-          </b-nav-item-dropdown>
           <b-nav-item v-if="isShow" href="#/project">Project</b-nav-item>
           <b-nav-item href="#/issue">Issue</b-nav-item>
           <b-nav-item v-if="isShow" href="#/accountmanagement">AccountManagement</b-nav-item>
