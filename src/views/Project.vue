@@ -424,7 +424,6 @@ export default {
       this.newData.generals = item.generals;
       this.infoModal.content = JSON.stringify(item, null, 2);
       // this.$root.$emit("bv::show::modal", this.infoModal.id, button);
-      this.$bvModal.show(this.infoModal.id);
       let developers = [];
       let generals = [];
       const vm = this;
@@ -449,6 +448,7 @@ export default {
       this.newData.generals.forEach(function(general) {
         if (generals.includes(general.id)) vm.generalsSelected.push(general.id);
       });
+      this.$bvModal.show(this.infoModal.id);
     },
     resetInfoModal() {
       this.infoModal.title = "";
@@ -566,6 +566,7 @@ export default {
           if (response.status == 200) {
             vm.tempProject = { name: "", description: "", managerId: "" };
             this.makeToast("success", "成功", "成功新增專案!");
+            this.fetchData();
           }
         })
         .catch(err => {
