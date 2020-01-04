@@ -8,28 +8,30 @@
             <label for="input-name">名稱</label>
             <b-form-input id="input-name" v-model="user.name" type="text" required></b-form-input>
           </b-col>
-          <b-col></b-col>
         </b-row>
         <b-row>
           <b-col cols="3">
             <label for="input-account">帳號</label>
             <b-form-input id="input-account" v-model="user.account" type="text" required></b-form-input>
           </b-col>
-          <b-col></b-col>
         </b-row>
         <b-row>
           <b-col cols="3">
             <label for="input-eMail">信箱</label>
             <b-form-input id="input-eMail" v-model="user.eMail" type="email" required></b-form-input>
           </b-col>
-          <b-col></b-col>
         </b-row>
         <b-row>
           <b-col cols="3">
             <label for="input-charactorId">身分</label>
-            <b-form-input id="input-charactorId" v-model="CharactorOptions[user.charactorId].name" type="text" disabled></b-form-input>
+            <b-form-input id="input-charactorId" :value="GetCharactorName" type="text" disabled></b-form-input>
           </b-col>
-          <b-col></b-col>
+        </b-row>
+        <b-row>
+          <b-col cols="3">
+            <label for="input-linwId">Line Id</label>
+            <b-form-input id="input-linwId" :value="GetLineid" type="text" disabled></b-form-input>
+          </b-col>
         </b-row>
         <b-button variant="secondary" @click="update">修改</b-button>
       </b-card>
@@ -45,34 +47,6 @@ export default {
   data() {
     return {
       user: {},
-      CharactorOptions: [
-        { charactorId: 0, name: "未配置" },
-        { charactorId: 1, name: "系統管理員" },
-        { charactorId: 2, name: "一般使用者" }
-      ],
-      fields: [
-        {
-          key: "name",
-          label: "名稱"
-        },
-        {
-          key: "account",
-          label: "帳號"
-        },
-        {
-          key: "eMail",
-          label: "信箱"
-        },
-        {
-          key: "charactorId",
-          label: "權限",
-          formatter: (value /*, key, item*/) => {
-            return value
-              ? this.CharactorOptions[value].name
-              : this.CharactorOptions[0].name;
-          }
-        }
-      ]
     };
   },
   components: { NavBar },
@@ -115,6 +89,24 @@ export default {
             this.$router.go();
           }
         });
+    }
+  },
+  computed:{
+    GetLineid(){
+      const lineid = this.user.lineId
+      if (lineid === null)
+        return "尚未設定"
+      return lineid
+    },
+    GetCharactorName(){
+       const charactorOptions = [
+        { /*charactorId: 0,*/ name: "未配置" },
+        { /*charactorId: 1,*/ name: "系統管理員" },
+        { /*charactorId: 2,*/ name: "一般使用者" }
+      ]
+      console.log(this.user.charactorId)
+      const CharactorName = charactorOptions[this.user.charactorId].name
+      return CharactorName
     }
   },
   mounted() {
