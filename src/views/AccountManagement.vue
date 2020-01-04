@@ -237,7 +237,7 @@
           <b-button variant="danger" class="float-right mr-2" @click="deleteAccount(true)">確定</b-button>
         </b-modal>
         <!-- check delete modal END-->
-        <b-modal id="addAccountModal" title="新增專案" hide-footer>
+        <b-modal id="addAccountModal" title="新增使用者" hide-footer>
           <Register @registerSuccess="createUser" />
         </b-modal>
       </b-card>
