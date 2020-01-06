@@ -16,10 +16,10 @@
                 <th style="width: 3%" scope="col">查看</th>
                 <th style="width: 5%" scope="col">代號</th>
                 <th style="width: 10%" scope="col">標題</th>
-                <th style="width: 7%; min-width: 105px" scope="col">指派者ID</th>
-                <th style="width: 7%; min-width: 105px" scope="col">回報者ID</th>
+                <th style="width: 7%; min-width: 105px" scope="col">指派者</th>
+                <th style="width: 7%; min-width: 105px" scope="col">回報者</th>
                 <th style="width: 13%" scope="col">狀態</th>
-                <th style="width: 7%" scope="col">創立者ID</th>
+                <th style="width: 7%" scope="col">創立者</th>
                 <th style="width: 3%" scope="col">刪除</th>
             </thead>
             <tbody>
@@ -179,7 +179,7 @@
                 const api = 'http://lspssapple.asuscomm.com:81/api/issue';
                 const vm = this;
                 const token = localStorage.getItem('token');
-                const id = localStorage.getItem('userId');
+                const id = localStorage.getItem('user_id');
                 this.$http.get(
                     api,
                     { headers: { "Authorization": "Bearer " + token, "content-type": "application/json;charset=utf-8"}}
