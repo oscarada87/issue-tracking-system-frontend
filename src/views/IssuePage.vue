@@ -37,7 +37,7 @@
                     </b-row>
                     <b-row class="pb-3">
                         <b-col>
-                            <label for="input-assigneeId">指派者</label>
+                            <label for="input-assigneeId">被指派者</label>
                             <b-form-select v-model="issue.assigneeId" id="input-assigneeId" :options="users" required></b-form-select>
                         </b-col>
                         <b-col>

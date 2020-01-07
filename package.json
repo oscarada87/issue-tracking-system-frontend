@@ -16,9 +16,11 @@
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.1.0",
     "core-js": "^2.6.11",
+    "echarts": "^4.6.0",
     "jquery": "^3.4.1",
     "lodash": "^4.17.15",
     "popper.js": "^1.16.0",
+    "v-charts": "^1.19.0",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-router": "^3.0.3"

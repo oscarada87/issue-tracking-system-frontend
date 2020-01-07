@@ -16,7 +16,7 @@
                 <th style="width: 3%" scope="col">查看</th>
                 <th style="width: 5%" scope="col">代號</th>
                 <th style="width: 10%" scope="col">標題</th>
-                <th style="width: 7%; min-width: 105px" scope="col">指派者</th>
+                <th style="width: 7%; min-width: 105px" scope="col">被指派者</th>
                 <th style="width: 7%; min-width: 105px" scope="col">回報者</th>
                 <th style="width: 13%" scope="col">狀態</th>
                 <th style="width: 7%" scope="col">創立者</th>
@@ -69,11 +69,11 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="assigneeId">指派人</label>
+                                <label for="assigneeId">被指派者</label>
                                 <b-form-select v-model="tempIssue.assigneeId" id="assigneeId" :options="users" size="sm" class="mt-3" required></b-form-select>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="reporterId">回報人</label>
+                                <label for="reporterId">回報者</label>
                                 <b-form-select v-model="tempIssue.reporterId" id="reporterId" :options="users" size="sm" class="mt-3" required></b-form-select>
                             </div>
                         </div>

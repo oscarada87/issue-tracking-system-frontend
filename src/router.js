@@ -9,6 +9,7 @@ import IssueIndex from './views/IssueIndex.vue'
 import IssuePage from './views/IssuePage.vue'
 import AccountManagement from './views/AccountManagement.vue'
 import Profile from './views/Profile.vue'
+import Report from './views/Report.vue'
 
 Vue.use(Router)
 
@@ -60,6 +61,11 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: Profile
+    },
+    {
+      path: '/report',
+      name: 'Report',
+      component: Report
     }
   ]
 })

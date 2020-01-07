@@ -11,6 +11,7 @@
           <b-nav-item v-if="isShow" href="#/project">Project</b-nav-item>
           <b-nav-item href="#/issue">Issue</b-nav-item>
           <b-nav-item v-if="isShow" href="#/accountmanagement">AccountManagement</b-nav-item>
+          <b-nav-item href="#/report">Report</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

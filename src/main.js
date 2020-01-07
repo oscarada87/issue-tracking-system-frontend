@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import VCharts from 'v-charts'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -17,6 +18,8 @@ Vue.use(BootstrapVue)
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.use(VueAxios, axios)
+
+Vue.use(VCharts)
 
 Vue.config.productionTip = false
 
